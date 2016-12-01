@@ -20,8 +20,6 @@ points_y = points_y';
 t = linspace(0,2,via_points+2); %all together via_points+2 points
 
 spline_xyt = spline(t, [points_x; points_y]);
-spline_xyt_ti = linspace(0,2,400);
-spline_xyt_xyt = ppval(spline_xyt,spline_xyt_ti);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,6 +36,8 @@ fprintf('obstacles = %9g    length = %9g  halakut = %9g ALL = %9g\n', obst,  len
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot to see the process :
 if(DEBUG)
+    spline_xyt_ti = linspace(0,2,400);
+    spline_xyt_xyt = ppval(spline_xyt,spline_xyt_ti);
     array_x = spline_xyt_xyt(1,:);
     array_y = spline_xyt_xyt(2,:);
     plot(array_x,array_y, 'b-', 'LineWidth',2);

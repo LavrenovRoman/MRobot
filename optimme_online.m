@@ -40,6 +40,10 @@ figure_to_draw_result = 2;
 vector_counter = 1;
 %%%%%%%%%%%%%%%%%%%% Online - add treatment of intersect later if works! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if n>0
+    %%%%%%%%%%%%%%%%%%%% draw figures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if(WINDOWS)
+        draw_obstacle_map(figure_to_draw);
+    end
     radii = zeros(n,1);
     for i=1:n
         [tx,ty] = ginput(2);
@@ -53,10 +57,6 @@ if n>0
         yy =  y(2*i-1) + sin(t) * radii(i);
         fill(xx,yy,'r');
         hold on;
-    end
-    %%%%%%%%%%%%%%%%%%%% draw figures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if(WINDOWS)
-        draw_obstacle_map(figure_to_draw);
     end
 else
     if(n<0)
@@ -75,9 +75,9 @@ if(WINDOWS)
     sty = sty';
 
     figure(figure_to_draw);
-    %plot(stx,sty,'o');
-    start_point = [stx(1),sty(1)]
-    target_point = [stx(2),sty(2)]
+    plot(stx,sty,'o');
+    %start_point = [stx(1),sty(1)]
+    %target_point = [stx(2),sty(2)]
     %plot((stx(1)+stx(2))./2,(sty(1)+sty(2))./2,'o');
 end
 %stx(1)= -3;  sty(1)=29; stx(2)= 80; sty(2)=51; %for park
@@ -96,7 +96,7 @@ via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
 beta = beta_vector(vector_counter);
-filename = filename_vector(vector_counter);
+%filename = filename_vector(vector_counter);
 %number_of_iterations = 200;
 number_of_iterations = number_of_iterations_vector(vector_counter);
 
@@ -106,11 +106,11 @@ if(WINDOWS)
     print('-dbmp16m', filename_vector(vector_counter));
 end
 new_solution_cost = evaluate_solution(spline_xyt);
-old_solution_cost = new_solution_cost;
+%old_solution_cost = new_solution_cost;
 previous_iteration_spline_xyt = spline_xyt;
 
 if(DEBUG)
-    next = input('Press ENTER to continue to the next part');
+    input('Press ENTER to continue to the next part');
 end
 vector_counter = vector_counter+1;
 
@@ -118,7 +118,7 @@ vector_counter = vector_counter+1;
 for vector_counter = 2:length(alpha_vector)
     alpha = alpha_vector(vector_counter);
     beta = beta_vector(vector_counter);
-    filename =filename_vector(vector_counter);
+    %filename =filename_vector(vector_counter);
     %number_of_iterations = 20;
     number_of_iterations = number_of_iterations_vector(vector_counter);
 
@@ -127,7 +127,7 @@ for vector_counter = 2:length(alpha_vector)
     new_points
     old_solution_cost = new_solution_cost;
     if(DEBUG)
-        next = input('\nPress ENTER to continue to the next part\n');
+        input('\nPress ENTER to continue to the next part\n');
     end
     new_solution_cost  = evaluate_solution(spline_xyt);
 
@@ -144,7 +144,7 @@ for vector_counter = 2:length(alpha_vector)
     end
 
     if(DEBUG)
-        next = input('\nPress ENTER to continue to the next part\n');
+        input('\nPress ENTER to continue to the next part\n');
     end
    
     if(WINDOWS)
@@ -171,7 +171,7 @@ if(next)
     vector_counter = 1;
     alpha = alpha_vector(vector_counter);
     beta = beta_vector(vector_counter);
-    filename = filename_vector(vector_counter);
+    %filename = filename_vector(vector_counter);
     number_of_iterations = number_of_iterations_vector(vector_counter);
 
     [new_points, spline_xyt]  = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
@@ -179,19 +179,19 @@ if(next)
         print('-dbmp16m', filename_vector(vector_counter));
     end
     new_solution_cost = evaluate_solution(spline_xyt);
-    old_solution_cost = new_solution_cost;
+    %old_solution_cost = new_solution_cost;
     previous_iteration_spline_xyt = spline_xyt;
 
     if(DEBUG)
-        next = input('Press ENTER to continue to the next part');
+        input('Press ENTER to continue to the next part');
     end
-    vector_counter = vector_counter+1;
+    %vector_counter = vector_counter+1;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%% CICLE OF ITERATIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for vector_counter = 2:length(alpha_vector)
         alpha = alpha_vector(vector_counter);
         beta = beta_vector(vector_counter);
-        filename =filename_vector(vector_counter);
+        %filename =filename_vector(vector_counter);
         number_of_iterations = number_of_iterations_vector(vector_counter);
 
         via_points = new_points;
@@ -212,7 +212,7 @@ if(next)
         end
 
         if(DEBUG)
-            next = input('\nPress ENTER to continue to the next part\n');
+            input('\nPress ENTER to continue to the next part\n');
         end
         if(WINDOWS)
             print('-dbmp16m', filename_vector(vector_counter));
@@ -222,7 +222,7 @@ if(next)
     end
 end
 
-next = input('\nSecond stage search failed. Press ENTER to exit :(\n');
+input('\nSecond stage search failed. Press ENTER to exit :(\n');
 
 return;
 
