@@ -23,8 +23,10 @@ y = spline_xyt_value(2,:);
 
 dspline_xyt = fnder(spline_xyt);
 dspline_xyt_value = ppval(dspline_xyt,t);
-dx = spline_xyt_value(1,:);
-dy = spline_xyt_value(2,:);
+%dx = spline_xyt_value(1,:);
+%dy = spline_xyt_value(2,:);
+dx = dspline_xyt_value(1,:); %Modify Roman
+dy = dspline_xyt_value(2,:); %Modify Roman
 
 f1 = sqrt((dx).^2 + (dy).^2);
 f2 = f1 * 0;
@@ -34,11 +36,15 @@ for j=1:length(radii)
     x_0 = x_center(j);
     y_0 = y_center(j);
     r_0 = radii(j);
+    
+    rx = zeros(1,length(x));
+    ry = zeros(1,length(x));
+    dist = zeros(1,length(x));
 
     for counter=1:length(x)
-            rx(counter) = x(counter) - x_0;
-            ry(counter) = y(counter) - y_0;
-        dist(counter) =  r_0 - sqrt(rx(counter).^2 + ry(counter).^2);
+        rx(counter) = x(counter) - x_0;
+        ry(counter) = y(counter) - y_0;
+        dist(counter) = r_0 - sqrt(rx(counter).^2 + ry(counter).^2);
 
         if (KICK_KNAS && (dist(counter) < 0))
             obstacles_crossed(j) = 1;
