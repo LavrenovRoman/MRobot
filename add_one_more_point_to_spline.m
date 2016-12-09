@@ -18,7 +18,7 @@ end
 if (number_of_iterations > 0) %for initial splines
     [result,fval,exitflag ]= fminsearch(@potent_K, ...
         via_points,... %initial guess
-        optimset('MaxIter',number_of_iterations,'Display', 'on','TolX',0.01),...%    [], 'off'
+        optimset('MaxIter',number_of_iterations,'Display', 'on','TolX',0.1),...%    [], 'off'
         start(1),start(2),target(1),target(2));
 else % for precise splines
     [result,fval,exitflag ]= fminsearch(@potent_K, ...
@@ -52,7 +52,7 @@ plot_final_spline(spline_xyt,start,target,figure_to_draw,0);
 %tic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% looking for the K-middle points %%%%%%%%%%%%
-L = arc_length_integral(0,2, spline_xyt);
+%L = arc_length_integral(0,2, spline_xyt); %Modify Roman
 
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if(DEBUG_TIC_TOC)
@@ -80,12 +80,14 @@ for i=1:number_of_K_middle_points
     t_middle_y = spline_xyt_value(2);    
     temp_points(2*i-1) = t_middle_x;
     temp_points(2*i) = t_middle_y;
-    middle_x =[middle_x t_middle_x];
-    middle_y =[middle_y t_middle_y];
+    if(middle_point_plot)
+        middle_x =[middle_x t_middle_x];
+        middle_y =[middle_y t_middle_y];
+    end;
 end
 
 if(middle_point_plot)
-plot(middle_x,middle_y,'o');
+    plot(middle_x,middle_y,'o');
 end
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

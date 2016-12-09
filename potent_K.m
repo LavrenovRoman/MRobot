@@ -17,22 +17,29 @@ points_y(via_points+2) = yT;
 points_x = points_x';
 points_y = points_y';
 
-t = linspace(0,2,via_points+2); %all together via_points+2 points
+direct = 5;
+
+t = linspace(0,direct,via_points+2); %all together via_points+2 points
 
 spline_xyt = spline(t, [points_x; points_y]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-obst =  quad('potent_cost_K',0,2,[],[],spline_xyt);
-hal = sqrt(quad('halakut_K',0,2,[],[],spline_xyt));
-len = 0.5*quad('arc_length',0,2,[],[],spline_xyt);
+obst =  quad('potent_cost_K',0,direct,[],[],spline_xyt);
+hal = sqrt(quad('halakut_K',0,direct,[],[],spline_xyt));
+len = 0.5*quad('arc_length',0,direct,[],[],spline_xyt);
 %len = 0;
 %hal = 0;
 %0.01*
 cost = obst + hal + len;
 
-fprintf('obstacles = %9g    length = %9g  halakut = %9g ALL = %9g\n', obst,  len, hal, cost);
+for i=1:length(x(:,1))
+    fprintf('%9g ', x(i,1));
+end;
+fprintf('\n');
+
+fprintf('obstacles = %9g  length = %9g  halakut = %9g  ALL = %9g\n', obst, len, hal, cost);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot to see the process :
 if(DEBUG)

@@ -4,7 +4,7 @@ function optimme_online(n)
 %n!=0 - interactive obstacle building
 WINDOWS = 1;
 LINUX = 0;
-DEBUG = 1;
+DEBUG = 0;
 
 close all;
 warning off;
@@ -73,6 +73,9 @@ if(WINDOWS)
 
     stx = stx';
     sty = sty';
+    
+    stx = [0 100];
+    sty = [0 100];
 
     figure(figure_to_draw);
     plot(stx,sty,'o');
