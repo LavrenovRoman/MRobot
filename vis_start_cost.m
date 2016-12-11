@@ -1,4 +1,4 @@
-function f = vis_start_cost(t,spline_xyt)
+function f = vis_start_cost(spline_xyt)
 
 global radii;
 global x_center;
@@ -6,19 +6,51 @@ global y_center;
 
 obstacles_crossed = zeros(length(radii), 1);
 
-spline_xyt_value = ppval(spline_xyt,t);
-x = spline_xyt_value(1,:);
-y = spline_xyt_value(2,:);
+%spline_xyt_value = ppval(spline_xyt,t);
+%x = spline_xyt_value(1,:);
+%y = spline_xyt_value(2,:);
 
+distcount = 20;
+step = (spline_xyt.breaks(1,2) - spline_xyt.breaks(1,1))/distcount;
+path = zeros(1+distcount*(length(spline_xyt.breaks)-1), 2);
 
-path = zeros(1+20*(length(spline_xyt.breaks)-1), 2);
-path(1,1) = x(1,1);
-path(1,2) = y(1,1);
+p = 1;
+path(p,1) = spline_xyt.coefs(1, spline_xyt.order);
+path(p,2) = spline_xyt.coefs(2, spline_xyt.order);
+p = p + 1;
+
 for i=1:length(spline_xyt.breaks)-1
-    a = 
+    for j=1:distcount
+        a = j*step;
+        x = 0;
+        y = 0;
+        for k=spline_xyt.order:-1:1
+            x = x + spline_xyt.coefs((i*2)-1, k)*(a^(spline_xyt.order-k));
+            y = y + spline_xyt.coefs((i*2)  , k)*(a^(spline_xyt.order-k));
+        end
+        path(p,1) = x;
+        path(p,2) = y;
+        p = p + 1;
+    end
 end
 
+f = 0;
+for i=2:length(path(:,1))
+    intersectObst = 0;
+    for j=1:length(radii)
+        x = [x_center(j),y_center(j)];
+        dist = dist_point_segment(x, path(1,:), path(i,:));
+        if (dist < radii(j))
+            intersectObst = 1;
+            break;
+        end;
+    end;
+    if intersectObst == 0
+        f = f + step;
+    end;
+end;
 
+%{
 for j=1:length(radii)
 
     x_0 = x_center(j);
@@ -149,4 +181,5 @@ if(KICK_KNAS)
 else
     f = f1.*(f2+f3);
 end
+%}
 

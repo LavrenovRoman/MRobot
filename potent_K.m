@@ -26,20 +26,21 @@ spline_xyt = spline(t, [points_x; points_y]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+vstart = sqrt(sqrt((xT-xS)^2 + (yT-yS)^2))*vis_start_cost(spline_xyt);
 obst =  quad('potent_cost_K',0,direct,[],[],spline_xyt);
 hal = sqrt(quad('halakut_K',0,direct,[],[],spline_xyt));
 len = 0.5*quad('arc_length',0,direct,[],[],spline_xyt);
 %len = 0;
 %hal = 0;
 %0.01*
-cost = obst + hal + len;
+cost = obst + hal + len + vstart;
 
 for i=1:length(x(:,1))
     fprintf('%9g ', x(i,1));
 end;
 fprintf('\n');
 
-fprintf('obstacles = %9g  length = %9g  halakut = %9g  ALL = %9g\n', obst, len, hal, cost);
+fprintf('obstacles = %9g  length = %9g  halakut = %9g  vstart = %9g  ALL = %9g\n', obst, len, hal, vstart, cost);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot to see the process :
 if(DEBUG)
