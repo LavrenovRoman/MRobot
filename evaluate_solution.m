@@ -12,12 +12,14 @@ global intersect_x_center;
 global intersect_y_center;
 %%%%%%%%%%%%%%%%% checking intersections %%%%%%%%%%%%%%%%%
 
+global direct;
+
 epsilon = -0.5;
 
-cost_length = quad('arc_length',0, 2, [], [], spline_xyt);
+cost_length = 0.5*quad('arc_length',0, direct, [], [], spline_xyt);
 discretization = 0.1;
 parts = double(int16(cost_length/discretization));
-t = linspace(0,2,parts-1);
+t = linspace(0,direct,parts-1);
 
 spline_xyt_value = ppval(spline_xyt,t);
 x = spline_xyt_value(1,:);
@@ -82,15 +84,16 @@ original_beta = beta;
 alpha = 2;
 beta = 10;
 
-cost_obstacles  = quad('potent_cost_K',0,2,[],[],spline_xyt);
-cost_halakut = sqrt(quad('halakut_K',0,2,[],[],spline_xyt));
+cost_obstacles  = quad('potent_cost_K',0,direct,[],[],spline_xyt);
+cost_halakut = sqrt(quad('halakut_K',0,direct,[],[],spline_xyt));
 
 %restore original Alpha and Beta
 alpha = original_alpha;
 beta = original_beta;
 
 if(DEBUG)
-    fprintf('\nEVALUATION:\nobstacles = %9g    length = %9g  halakut = %9g ALL = %9g\n', cost_obstacles ,  cost_length, cost_halakut, cost_halakut + cost_length);
+    fprintf('\nEVALUATION:\nobstacles = %9g    length = %9g  halakut = %9g ALL = %9g\n', ...
+        cost_obstacles, cost_length, cost_halakut, cost_halakut + cost_length);
 end
 %cost = cost1 + cost2 + cost3;
 cost = cost_halakut + cost_length;

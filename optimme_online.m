@@ -10,6 +10,8 @@ close all;
 warning off;
 format long;
 
+global direct;
+
 global alpha;
 global beta;
 global number_of_iterations;
@@ -27,6 +29,9 @@ global map_number;
 radii = [];
 x=[];
 y=[];
+
+%direct of integral
+direct = 2;
 
 %%%%%%%%%%%%%%%%%%%%%%% DATA FOR ITERATIONS %%%%%%%%%%%%%%%%%%%%%%%%
 alpha_vector                = [0.5 0.6 0.6 0.6 0.6      0.6 0.6 0.6 0.6 0.6     0.7 0.7 0.7 0.7 0.8     0.8 0.8 0.8];

@@ -6,6 +6,7 @@ figure(figure_to_draw);
 close(figure_to_draw);
 
 global number_of_iterations;
+global direct;
 
 %hold on;
 draw_obstacle_map(figure_to_draw);
@@ -42,7 +43,7 @@ for i=1:number_of_via_points
 end
 final_x = [final_x target(1)];
 final_y = [final_y target(2)];
-t = linspace(0,2,number_of_via_points+2);
+t = linspace(0,direct,number_of_via_points+2);
 
 spline_xyt = spline(t, [final_x; final_y]);
 

@@ -1,38 +1,10 @@
-function f = vis_start_cost(spline_xyt)
+function f = vis_start_cost(path)
 
 global radii;
 global x_center;
 global y_center;
 
 obstacles_crossed = zeros(length(radii), 1);
-
-%spline_xyt_value = ppval(spline_xyt,t);
-%x = spline_xyt_value(1,:);
-%y = spline_xyt_value(2,:);
-
-distcount = 20;
-step = (spline_xyt.breaks(1,2) - spline_xyt.breaks(1,1))/distcount;
-path = zeros(1+distcount*(length(spline_xyt.breaks)-1), 2);
-
-p = 1;
-path(p,1) = spline_xyt.coefs(1, spline_xyt.order);
-path(p,2) = spline_xyt.coefs(2, spline_xyt.order);
-p = p + 1;
-
-for i=1:length(spline_xyt.breaks)-1
-    for j=1:distcount
-        a = j*step;
-        x = 0;
-        y = 0;
-        for k=spline_xyt.order:-1:1
-            x = x + spline_xyt.coefs((i*2)-1, k)*(a^(spline_xyt.order-k));
-            y = y + spline_xyt.coefs((i*2)  , k)*(a^(spline_xyt.order-k));
-        end
-        path(p,1) = x;
-        path(p,2) = y;
-        p = p + 1;
-    end
-end
 
 f = 0;
 for i=2:length(path(:,1))
@@ -46,9 +18,10 @@ for i=2:length(path(:,1))
         end;
     end;
     if intersectObst == 0
-        f = f + step;
+        f = f + sqrt((path(i,1)-path(i-1,1))^2 + (path(i,2)-path(i-1,2))^2);
     end;
 end;
+end
 
 %{
 for j=1:length(radii)
