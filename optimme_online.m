@@ -19,6 +19,7 @@ global number_of_iterations;
 global radii;
 global x_center;
 global y_center;
+global circles_intersection;
 
 global intersect_radii;
 global intersect_x_center;
@@ -100,6 +101,79 @@ start_point = [stx(1),sty(1)];
 target_point = [stx(2),sty(2)];
 
 via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
+
+intersectionMatrix = zeros(length(radii), length(radii));
+circles_intersection = cell(length(radii), 1);
+if ~isempty(radii)
+    circles_intersection{1,1} = [circles_intersection{1,1} 1];
+end;
+for i=1:length(radii)
+    x_i = x_center(i);
+    y_i = y_center(i);
+    r_i = radii(i);
+    findSome = 0;
+    for j=i+1:length(radii)
+        x_j = x_center(j);
+        y_j = y_center(j);
+        r_j = radii(j);
+        rx = x_i - x_j;
+        ry = y_i - y_j;
+        dist = sqrt(rx^2 + ry^2);
+        if dist<=r_i+r_j
+            intersectionMatrix(i,j) = 1;
+            intersectionMatrix(j,i) = 1;
+            findI = 0;
+            for k=1:length(circles_intersection)
+                for l=1:length(circles_intersection{k,1})
+                    if circles_intersection{k,1}(1,l) == i
+                        findI = 1;
+                        circles_intersection{k,1} = [circles_intersection{k,1} j];
+                        break;
+                    end;
+                end;
+                if findI == 1 
+                    break;
+                end;
+            end;
+            if findI == 0
+                circles_intersection{i,1} = [circles_intersection{i,1} i];
+                circles_intersection{i,1} = [circles_intersection{i,1} j];
+            end;
+            findSome = 1;
+        end;
+    end;
+    if findSome == 0
+        findI = 0;
+        for k=1:length(circles_intersection)
+            for l=1:length(circles_intersection{k,1})
+                if circles_intersection{k,1}(1,l) == i
+                    findI = 1;
+                    break;
+                end;
+            end;
+            if findI == 1 
+                break;
+            end;
+        end;
+        if findI == 0
+            circles_intersection{i,1} = [circles_intersection{i,1} i];
+        end;
+    end;
+end;
+
+for i=length(circles_intersection):-1:1
+    if isempty(circles_intersection{i,1})
+        circles_intersection(i) = [];
+        continue;
+    else
+        circles_intersection{i,1} = unique(circles_intersection{i,1});
+    end;
+end;
+
+graph_of_intersections = cell(length(circles_intersection), 1);
+for k=1:length(circles_intersection)
+
+draw_obstacle_map(figure_to_draw);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
