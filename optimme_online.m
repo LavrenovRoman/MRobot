@@ -102,7 +102,9 @@ target_point = [stx(2),sty(2)];
 
 via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
 
+intersectionArray = cell(length(radii), 1);
 intersectionMatrix = zeros(length(radii), length(radii));
+circles_intersection_points = cell(length(radii), length(radii));
 circles_intersection = cell(length(radii), 1);
 if ~isempty(radii)
     circles_intersection{1,1} = [circles_intersection{1,1} 1];
@@ -120,6 +122,14 @@ for i=1:length(radii)
         ry = y_i - y_j;
         dist = sqrt(rx^2 + ry^2);
         if dist<=r_i+r_j
+            syms x y;
+            h1=(y - y_center(i))^2 + (x - x_center(i))^2 - radii(i)^2;
+            h2=(y - y_center(j))^2 + (x - x_center(j))^2 - radii(j)^2;
+            [xx yy]=solve(h1,h2);
+            circles_intersection_points{i,j} = [double(xx(1,1)) double(yy(1,1))];
+            circles_intersection_points{j,i} = [double(xx(2,1)) double(yy(2,1))];
+            intersectionArray{i,1} = [intersectionArray{i,1} j];
+            intersectionArray{j,1} = [intersectionArray{j,1} i];            
             intersectionMatrix(i,j) = 1;
             intersectionMatrix(j,i) = 1;
             findI = 0;
@@ -170,8 +180,83 @@ for i=length(circles_intersection):-1:1
     end;
 end;
 
-graph_of_intersections = cell(length(circles_intersection), 1);
-for k=1:length(circles_intersection)
+circ = 1;
+while circ < length(circles_intersection)
+    findC = 0;
+    for i=circ+1:length(circles_intersection)
+        Inter = intersect(circles_intersection{circ,1}, circles_intersection{i,1});
+        if ~isempty(Inter)
+            findC = i;
+            break;
+        end;
+    end;
+    if findC == 0
+        circ = circ + 1;
+    else
+        circles_intersection{circ,1} = union(circles_intersection{circ,1}, circles_intersection{i,1});
+        circles_intersection(i) = [];
+    end;
+end;
+
+front_points_circles = cell(length(radii), 1);
+step = 1;
+b = zeros(2,1);
+temp = zeros(2,1);
+for i=1:length(radii)
+    t = ceil(2*pi*radii(i)/step); 
+    d = ceil(360/t);
+    for a=d:d:360
+        x = x_center(i) + radii(i)*cos(degtorad(a));
+        y = y_center(i) + radii(i)*sin(degtorad(a));
+        findC = 0;
+        for c=1:length(intersectionArray{i,1})
+            circ = intersectionArray{i,1}(1,c);
+            dist = sqrt((x-x_center(circ))^2 + (y-y_center(circ))^2);
+            if (dist < radii(circ))
+                findC = circ;
+                break;
+            end;
+        end;
+        b(1,1) = x;
+        b(2,1) = y;
+        if findC == 0
+            if temp(1,1)~=0 && temp(2,1)~=0
+                front_points_circles{i,1} = [front_points_circles{i,1} temp];
+                temp = zeros(2,1);
+            end;
+            front_points_circles{i,1} = [front_points_circles{i,1} b];
+        else
+            dist1 = sqrt((x-circles_intersection_points{i, findC}(1,1))^2 + (y-circles_intersection_points{i, findC}(1,2))^2);
+            dist2 = sqrt((x-circles_intersection_points{findC, i}(1,1))^2 + (y-circles_intersection_points{findC, i}(1,2))^2);
+            if dist1<dist2
+                temp(1,1) = circles_intersection_points{i, findC}(1,1);
+                temp(2,1) = circles_intersection_points{i, findC}(1,2);
+            else
+                temp(1,1) = circles_intersection_points{findC,1}(1,1);
+                temp(2,1) = circles_intersection_points{findC,1}(1,2);
+            end;
+        end;
+    end;
+end;
+
+%graph_of_intersections = cell(length(circles_intersection), 1);
+%{
+for i=1:length(circles_intersection)
+    if length(circles_intersection{i,1}) == 1
+    else
+        for j=1:length(circles_intersection{i,1})-1
+            indC1 = circles_intersection{i,1}(1,j);
+            for k=j+1:length(circles_intersection{i,1})
+                indC2 = circles_intersection{i,1}(1,k);
+                if intersectionMatrix(indC1,indC2) == 1
+                    
+                    
+                end;
+            end;   
+        end;            
+    end;
+end;
+%}
 
 draw_obstacle_map(figure_to_draw);
 
