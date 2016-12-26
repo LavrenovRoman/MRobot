@@ -199,12 +199,16 @@ while circ < length(circles_intersection)
 end;
 
 front_points_circles = cell(length(radii), 1);
+front_points = cell(length(radii)^2, 1);
+f_p = 1;
 step = 1;
 b = zeros(2,1);
-temp = zeros(2,1);
 for i=1:length(radii)
     t = ceil(2*pi*radii(i)/step); 
     d = ceil(360/t);
+    endCircPoint = 0;
+    temp = zeros(2,1);
+    beginBad = -1;
     for a=d:d:360
         x = x_center(i) + radii(i)*cos(degtorad(a));
         y = y_center(i) + radii(i)*sin(degtorad(a));
@@ -222,9 +226,15 @@ for i=1:length(radii)
         if findC == 0
             if temp(1,1)~=0 && temp(2,1)~=0
                 front_points_circles{i,1} = [front_points_circles{i,1} temp];
+                front_points{f_p,1} = [front_points{f_p,1} temp];
                 temp = zeros(2,1);
             end;
             front_points_circles{i,1} = [front_points_circles{i,1} b];
+            front_points{f_p,1} = [front_points{f_p,1} b];
+            endCircPoint = 1;            
+            if a == d
+                beginBad = f_p;
+            end;
         else
             dist1 = sqrt((x-circles_intersection_points{i, findC}(1,1))^2 + (y-circles_intersection_points{i, findC}(1,2))^2);
             dist2 = sqrt((x-circles_intersection_points{findC, i}(1,1))^2 + (y-circles_intersection_points{findC, i}(1,2))^2);
@@ -232,10 +242,53 @@ for i=1:length(radii)
                 temp(1,1) = circles_intersection_points{i, findC}(1,1);
                 temp(2,1) = circles_intersection_points{i, findC}(1,2);
             else
-                temp(1,1) = circles_intersection_points{findC,1}(1,1);
-                temp(2,1) = circles_intersection_points{findC,1}(1,2);
+                temp(1,1) = circles_intersection_points{findC,i}(1,1);
+                temp(2,1) = circles_intersection_points{findC,i}(1,2);
             end;
+            if endCircPoint == 1
+                front_points_circles{i,1} = [front_points_circles{i,1} temp];
+                front_points{f_p,1} = [front_points{f_p,1} temp];
+                f_p = f_p + 1;
+                temp = zeros(2,1);
+                endCircPoint = 0;
+            end;                
         end;
+    end;
+    if beginBad ~= -1
+        front_points{beginBad,1} = [front_points{f_p,1} front_points{beginBad,1}];
+        front_points(f_p) = [];
+    end;
+end;
+
+f_p_it = 1;
+while f_p_it < length(front_points)
+    point = front_points{f_p_it, 1}(:,length(front_points{f_p_it, 1}));
+    findI = 0;
+    i = f_p_it+1;
+    while i<length(front_points)
+        if isempty(front_points{i, 1})
+            break;
+        end;
+        p1 = front_points{i, 1}(:,1);
+        p2 = front_points{i, 1}(:,length(front_points{i, 1}));
+        if p1 == point
+            front_points{i, 1}(:,1) = [];
+            front_points{f_p_it, 1} = [front_points{f_p_it, 1} front_points{i, 1}];
+            front_points(i) = [];
+            findI = 1;
+            break;
+        elseif p2 == point
+            front_points{i, 1} = flip(front_points{i, 1});
+            front_points{i, 1}(:,1) = [];
+            front_points{f_p_it, 1} = [front_points{f_p_it, 1} front_points{i, 1}];
+            front_points(i) = [];
+            findI = 1;
+            break;
+        end;
+        i = i + 1;
+    end;
+    if findI == 0
+        f_p_it = f_p_it + 1;
     end;
 end;
 
