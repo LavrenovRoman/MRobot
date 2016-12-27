@@ -20,6 +20,7 @@ global radii;
 global x_center;
 global y_center;
 global circles_intersection;
+global front_points;
 
 global intersect_radii;
 global intersect_x_center;
@@ -30,6 +31,8 @@ global map_number;
 radii = [];
 x=[];
 y=[];
+
+front_points = [];
 
 %direct of integral
 direct = 2;
@@ -105,12 +108,13 @@ via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
 intersectionArray = cell(length(radii), 1);
 circles_intersection_points = cell(length(radii), length(radii));
 circles_intersection = cell(length(radii), 1);
+%temp = zeros(2,1);
+%vec = zeros(2,1);
 for i=1:length(radii)
     circles_intersection{i,1} = [circles_intersection{i,1} i];
     x_i = x_center(i);
     y_i = y_center(i);
     r_i = radii(i);
-    findSome = 0;
     for j=i+1:length(radii)
         x_j = x_center(j);
         y_j = y_center(j);
@@ -119,6 +123,30 @@ for i=1:length(radii)
         ry = y_i - y_j;
         dist = sqrt(rx^2 + ry^2);
         if dist<=r_i+r_j
+            %{
+            d_i = dist*r_i/(r_i + r_j);
+            l = sqrt(r_i^2 - d_i^2);
+            temp(1,1) = x_j - x_i;
+            temp(2,1) = y_j - y_i;
+            x_c = (x_j + x_i)/2;
+            y_c = (y_j + y_i)/2;
+            if temp(2,1) == 0
+                vec(1,1) = 0;
+                vec(2,1) = 1;
+            else 
+                vec(1,1) = 1;
+                vec(2,1) = -1*temp(1,1)/temp(2,1);
+                sum = sqrt(vec(1,1)^2 + vec(2,1)^2);
+                vec(1,1) = vec(1,1)/sum;
+                vec(2,1) = vec(2,1)/sum;
+            end;
+            xs = zeros(2,1);
+            ys = zeros(2,1);
+            xs(1,1) = x_c + vec(1,1)*l;
+            xs(2,1) = x_c - vec(1,1)*l;
+            ys(1,1) = y_c + vec(2,1)*l;
+            ys(2,1) = y_c - vec(2,1)*l;
+            %}
             syms x y;
             h1=(y - y_center(i))^2 + (x - x_center(i))^2 - radii(i)^2;
             h2=(y - y_center(j))^2 + (x - x_center(j))^2 - radii(j)^2;
@@ -127,72 +155,30 @@ for i=1:length(radii)
             circles_intersection_points{j,i} = [double(xx(2,1)) double(yy(2,1))];
             intersectionArray{i,1} = [intersectionArray{i,1} j];
             intersectionArray{j,1} = [i intersectionArray{j,1}];
-            findI = 0;
-            for k=1:length(circles_intersection)
-                for l=1:length(circles_intersection{k,1})
-                    if circles_intersection{k,1}(1,l) == i
-                        findI = 1;
-                        circles_intersection{k,1} = [circles_intersection{k,1} j];
-                        break;
-                    end;
-                end;
-                if findI == 1 
-                    break;
-                end;
-            end;
-            if findI == 0
-                circles_intersection{i,1} = [circles_intersection{i,1} j];
-            end;
-            findSome = 1;
-        end;
-    end;
-    if findSome == 0
-        findI = 0;
-        for k=1:length(circles_intersection)
-            for l=1:length(circles_intersection{k,1})
-                if circles_intersection{k,1}(1,l) == i
-                    findI = 1;
-                    break;
-                end;
-            end;
-            if findI == 1 
-                break;
-            end;
-        end;
-        if findI == 0
-            circles_intersection{i,1} = [circles_intersection{i,1} i];
+            circles_intersection{i,1} = [circles_intersection{i,1} j];
+            circles_intersection{j,1} = [i circles_intersection{j,1}];
         end;
     end;
 end;
 
-for i=length(circles_intersection):-1:1
-    if isempty(circles_intersection{i,1})
-        circles_intersection(i) = [];
-        continue;
-    else
-        circles_intersection{i,1} = unique(circles_intersection{i,1});
-    end;
-end;
-
-circ = 1;
-while circ < length(circles_intersection)
-    findC = 0;
-    for i=circ+1:length(circles_intersection)
-        Inter = intersect(circles_intersection{circ,1}, circles_intersection{i,1});
+it = 1;
+while it < length(circles_intersection)
+    findI = 0;
+    for i=it+1:length(circles_intersection)
+        Inter = intersect(circles_intersection{it,1}, circles_intersection{i,1});
         if ~isempty(Inter)
-            findC = i;
+            circles_intersection{it,1} = union(circles_intersection{it,1}, circles_intersection{i,1});
+            circles_intersection(i) = [];
+            findI = i;
             break;
         end;
     end;
-    if findC == 0
-        circ = circ + 1;
-    else
-        circles_intersection{circ,1} = union(circles_intersection{circ,1}, circles_intersection{i,1});
-        circles_intersection(i) = [];
+    if findI == 0
+        it = it + 1;
     end;
-end;
+end; 
 
-front_points_circles = cell(length(radii), 1);
+%front_points_circles = cell(length(radii), 1);
 front_points = cell(length(radii)^2, 1);
 f_p = 1;
 step = 1;
@@ -219,11 +205,11 @@ for i=1:length(radii)
         b(2,1) = y;
         if findC == 0
             if temp(1,1)~=0 && temp(2,1)~=0
-                front_points_circles{i,1} = [front_points_circles{i,1} temp];
+                %front_points_circles{i,1} = [front_points_circles{i,1} temp];
                 front_points{f_p,1} = [front_points{f_p,1} temp];
                 temp = zeros(2,1);
             end;
-            front_points_circles{i,1} = [front_points_circles{i,1} b];
+            %front_points_circles{i,1} = [front_points_circles{i,1} b];
             front_points{f_p,1} = [front_points{f_p,1} b];
             endCircPoint = 1;            
             if a == d
@@ -240,7 +226,7 @@ for i=1:length(radii)
                 temp(2,1) = circles_intersection_points{findC,i}(1,2);
             end;
             if endCircPoint == 1
-                front_points_circles{i,1} = [front_points_circles{i,1} temp];
+                %front_points_circles{i,1} = [front_points_circles{i,1} temp];
                 front_points{f_p,1} = [front_points{f_p,1} temp];
                 f_p = f_p + 1;
                 temp = zeros(2,1);
@@ -293,6 +279,7 @@ while f_p_it < length(front_points)
     end;
 end;
 
+clf(figure_to_draw);
 draw_obstacle_map(figure_to_draw);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

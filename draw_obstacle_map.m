@@ -9,6 +9,8 @@ global intersect_radii;
 global intersect_x_center;
 global intersect_y_center;
 
+global front_points;
+
 %vizual stuff
 axis_xmin = -20;
 axis_xmax = 140;
@@ -37,13 +39,21 @@ axis manual tight equal;
 axis([frame_xmin-1 frame_xmax+1 frame_ymin-1 frame_ymax+1]);
 
 hold on;
-for i=1:length(radii)
-      t = linspace(0,2*pi,72);%instead of 72 use 360 later
-      xx =  x_center(i) + cos(t) * radii(i); 
-      yy =  y_center(i) + sin(t) * radii(i);
-      fill(xx,yy,'r');
-      hold on;  
-end
+for i=1:length(front_points)
+    x = front_points{i,1}(1,:);
+    y = front_points{i,1}(2,:);
+    plot(x,y, 'r');
+end;
+
+if isempty(front_points)
+    for i=1:length(radii)
+        t = linspace(0,2*pi,72);%instead of 72 use 360 later
+        xx =  x_center(i) + cos(t) * radii(i); 
+        yy =  y_center(i) + sin(t) * radii(i);
+        fill(xx,yy,'r');
+        hold on;  
+    end;
+end;
 
 for i=1:length(intersect_radii)
       t = linspace(0,2*pi,72);%instead of 72 use 360 later
