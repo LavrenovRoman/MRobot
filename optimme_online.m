@@ -150,7 +150,7 @@ for i=1:length(radii)
             syms x y;
             h1=(y - y_center(i))^2 + (x - x_center(i))^2 - radii(i)^2;
             h2=(y - y_center(j))^2 + (x - x_center(j))^2 - radii(j)^2;
-            [xx, yy]=solve(h1,h2);
+            [xx, yy]=solve(h1,h2,'Real',true);
             circles_intersection_points{i,j} = [double(xx(1,1)) double(yy(1,1))];
             circles_intersection_points{j,i} = [double(xx(2,1)) double(yy(2,1))];
             intersectionArray{i,1} = [intersectionArray{i,1} j];
@@ -178,7 +178,6 @@ while it < length(circles_intersection)
     end;
 end; 
 
-%front_points_circles = cell(length(radii), 1);
 front_points = cell(length(radii)^2, 1);
 f_p = 1;
 step = 1;
@@ -205,11 +204,9 @@ for i=1:length(radii)
         b(2,1) = y;
         if findC == 0
             if temp(1,1)~=0 && temp(2,1)~=0
-                %front_points_circles{i,1} = [front_points_circles{i,1} temp];
                 front_points{f_p,1} = [front_points{f_p,1} temp];
                 temp = zeros(2,1);
             end;
-            %front_points_circles{i,1} = [front_points_circles{i,1} b];
             front_points{f_p,1} = [front_points{f_p,1} b];
             endCircPoint = 1;            
             if a == d
@@ -226,7 +223,6 @@ for i=1:length(radii)
                 temp(2,1) = circles_intersection_points{findC,i}(1,2);
             end;
             if endCircPoint == 1
-                %front_points_circles{i,1} = [front_points_circles{i,1} temp];
                 front_points{f_p,1} = [front_points{f_p,1} temp];
                 f_p = f_p + 1;
                 temp = zeros(2,1);
