@@ -122,7 +122,7 @@ for i=1:length(radii)
         rx = x_i - x_j;
         ry = y_i - y_j;
         dist = sqrt(rx^2 + ry^2);
-        if dist<=r_i+r_j
+        if dist<r_i+r_j
             %{
             d_i = dist*r_i/(r_i + r_j);
             l = sqrt(r_i^2 - d_i^2);
@@ -277,6 +277,8 @@ end;
 
 clf(figure_to_draw);
 draw_obstacle_map(figure_to_draw);
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
