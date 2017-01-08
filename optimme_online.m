@@ -275,10 +275,60 @@ while f_p_it < length(front_points)
     end;
 end;
 
+while length(front_points) > length(circles_intersection)
+    minFP = 10000000;
+    minFPi = 0;
+    for i=1:length(front_points)
+        if minFP > length(front_points{i, 1})
+            minFP = length(front_points{i, 1});
+            minFPi = i;
+        end;
+    end;
+    front_points(minFPi) = [];
+end;
+
 clf(figure_to_draw);
 draw_obstacle_map(figure_to_draw);
 
+limits = [10000 -10000 10000 -10000];
+for i=1:length(front_points)
+    for j=1:length(front_points{i, 1})
+        point = front_points{i, 1}(:,j);
+        if limits(1,1) > point(1,1) 
+            limits(1,1) = point(1,1);
+        end;
+        if limits(1,2) < point(1,1) 
+            limits(1,2) = point(1,1);
+        end;
+        if limits(1,3) > point(2,1) 
+            limits(1,3) = point(2,1);
+        end;
+        if limits(1,4) < point(2,1) 
+            limits(1,4) = point(2,1);
+        end;
+    end;
+end;
 
+dx = (limits(1,2) - limits(1,1))/20;
+dy = (limits(1,4) - limits(1,3))/20;
+limits(1,1) = limits(1,1)-dx;
+limits(1,2) = limits(1,2)+dx;
+limits(1,3) = limits(1,3)-dy;
+limits(1,4) = limits(1,4)+dy;
+
+epsilonvoronoi = step/5;
+
+obstacles = front_points';
+for i=1:length(obstacles)
+    obstacles{1, i} = obstacles{1, i}';
+end;
+
+[X_Total_points,Y_Total_points, All_cells_Number, Cell_start, X1] = rmt_voronoi_epsi(length(circles_intersection), limits,epsilonvoronoi,obstacles);
+
+[trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
+                    VertWithoutCurve, Edges, Verts] = rmt_get_voronoi(limits, (length(circles_intersection)+1), start_point, ...
+                    target_point, X_Total_points, Y_Total_points, ...
+                    All_cells_Number, Cell_start, X1, 1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
