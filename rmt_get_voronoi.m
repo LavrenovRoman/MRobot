@@ -81,6 +81,7 @@ Ny = limits(4);
 %Getting Parameters of Voronoi Diagram
 [Voro_Vertex,Voro_Cell] = voronoin([X_Total_points' Y_Total_points']);
 
+Temp_Edge = zeros(length(All_cells_Number)*2, 2);
 k=1;
 %temp=0;
 for i=1:length(All_cells_Number)
@@ -128,7 +129,7 @@ for i=1:length(All_cells_Number)
           end;
                             
           for m=mBegin:Cell_start(l+1)-2%-2
-              if(~isempty(find(Voro_Cell{m}==a)))&&(~isempty(find(Voro_Cell{m}==b)))
+              if(~isempty(find(Voro_Cell{m}==a, 1)))&&(~isempty(find(Voro_Cell{m}==b, 1)))
                   if (l==All_cells_Number(i) && l==1 && abs(m-i)>1)||(l~=All_cells_Number(i))
                       Temp_Edge(k,:)=[a b];
                       k=k+1;
@@ -142,6 +143,7 @@ for i=1:length(All_cells_Number)
 end
 
 Temp_Edge=unique(Temp_Edge,'rows');
+Temp_Edge(1,:) = [];
 
 %Delete duplicate edges like (1, 2) and (2, 1)
 temp1 = 1;
@@ -160,20 +162,24 @@ end
 %figure;
 %axis([0 100 0 100]);
 %hold on;
-
+Edges = zeros(4, length(Temp_Edge));
+%Edge_X1 = zeros(1, length(Temp_Edge));
+%Edge_X2 = zeros(1, length(Temp_Edge));
+%Edge_Y1 = zeros(1, length(Temp_Edge));
+%Edge_Y2 = zeros(1, length(Temp_Edge));
 for i=1:length(Temp_Edge)
-    Edge_X1(i)=Voro_Vertex(Temp_Edge(i,1),1);
-    Edge_X2(i)=Voro_Vertex(Temp_Edge(i,2),1);
-    Edge_Y1(i)=Voro_Vertex(Temp_Edge(i,1),2);
-    Edge_Y2(i)=Voro_Vertex(Temp_Edge(i,2),2);
+    Edges(1,i)=Voro_Vertex(Temp_Edge(i,1),1);
+    Edges(2,i)=Voro_Vertex(Temp_Edge(i,2),1);
+    Edges(3,i)=Voro_Vertex(Temp_Edge(i,1),2);
+    Edges(4,i)=Voro_Vertex(Temp_Edge(i,2),2);
     if Is_draw==1
-        plot([Edge_X1(i) Edge_X2(i)],[Edge_Y1(i) Edge_Y2(i)],'color',[.8 .8 .8]);
+        plot([Edges(1,i) Edges(2,i)],[Edges(3,i) Edges(4,i)],'color',[.8 .8 .8]);
     end;
 end
-Edges(1, :) = Edge_X1;
-Edges(2, :) = Edge_X2;
-Edges(3, :) = Edge_Y1;
-Edges(4, :) = Edge_Y2;
+%Edges(1, :) = Edge_X1;
+%Edges(2, :) = Edge_X2;
+%Edges(3, :) = Edge_Y1;
+%Edges(4, :) = Edge_Y2;
 
 Vertex = unique(Temp_Edge);
 N = length(Vertex);

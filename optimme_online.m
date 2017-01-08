@@ -316,7 +316,7 @@ limits(1,2) = limits(1,2)+dx;
 limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
-epsilonvoronoi = step/5;
+epsilonvoronoi = step;
 
 obstacles = front_points';
 for i=1:length(obstacles)
