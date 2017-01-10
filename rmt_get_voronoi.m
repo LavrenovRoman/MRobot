@@ -680,6 +680,9 @@ end
      traj = [traj;[x', y']];
  end
  
+ traj = [Start; traj];
+ traj = [traj; Goal];
+ 
  %x=[Vertex_Cord(path(i+1),1) Goal(1)];
  %y=[Vertex_Cord(path(i+1),2) Goal(2)];
  %if Is_draw==1

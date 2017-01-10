@@ -231,8 +231,13 @@ for i=1:length(radii)
         end;
     end;
     if beginBad ~= -1
-        front_points{beginBad,1} = [front_points{f_p,1} front_points{beginBad,1}];
-        front_points(f_p) = [];
+        if beginBad~=f_p 
+            front_points{beginBad,1} = [front_points{f_p,1} front_points{beginBad,1}];
+            front_points(f_p) = [];
+        else
+            f_p = f_p + 1;
+            %front_points{beginBad,1} = [front_points{beginBad,1}(:, length(front_points{beginBad,1})) front_points{beginBad,1}];
+        end;
     end;
 end;
 
@@ -329,6 +334,27 @@ end;
                     VertWithoutCurve, Edges, Verts] = rmt_get_voronoi(limits, (length(circles_intersection)+1), start_point, ...
                     target_point, X_Total_points, Y_Total_points, ...
                     All_cells_Number, Cell_start, X1, 1);
+       
+k = 1;
+shortest_path(1, 1) = trajDV(1,1);
+shortest_path(2, 1) = trajDV(1,2);
+for i=2:length(trajDV(:,1))
+    p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
+    p2 = [trajDV(i, 1) trajDV(i, 2)];
+    for c=1:length(radii)
+        x = [x_center(c) y_center(c)];
+        r_c = radii(c);
+        dist = dist_point_segment(x, p1, p2);
+        if dist<r_c
+            k = k + 2;
+            shortest_path(k, 1) = trajDV(i-1,1);
+            shortest_path(k+1, 1) = trajDV(i-1,2);
+            break;
+        end;
+    end;
+end;
+shortest_path(1, :) = [];
+shortest_path(1, :) = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
@@ -337,7 +363,11 @@ beta = beta_vector(vector_counter);
 %number_of_iterations = 200;
 number_of_iterations = number_of_iterations_vector(vector_counter);
 
-[new_points, spline_xyt]  = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
+if isempty(shortest_path)
+    [new_points, spline_xyt]  = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
+else
+    [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
+end;
 new_points
 if(WINDOWS)
     print('-dbmp16m', filename_vector(vector_counter));
