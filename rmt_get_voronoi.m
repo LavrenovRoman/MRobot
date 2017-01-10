@@ -81,7 +81,7 @@ Ny = limits(4);
 %Getting Parameters of Voronoi Diagram
 [Voro_Vertex,Voro_Cell] = voronoin([X_Total_points' Y_Total_points']);
 
-Temp_Edge = zeros(length(All_cells_Number)*2, 2);
+%Temp_Edge = zeros(length(All_cells_Number)*2, 2);
 k=1;
 %temp=0;
 for i=1:length(All_cells_Number)
@@ -143,7 +143,7 @@ for i=1:length(All_cells_Number)
 end
 
 Temp_Edge=unique(Temp_Edge,'rows');
-Temp_Edge(1,:) = [];
+%Temp_Edge(1,:) = [];
 
 %Delete duplicate edges like (1, 2) and (2, 1)
 temp1 = 1;

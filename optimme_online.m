@@ -295,7 +295,7 @@ end;
 clf(figure_to_draw);
 draw_obstacle_map(figure_to_draw);
 
-limits = [10000 -10000 10000 -10000];
+limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
 for i=1:length(front_points)
     for j=1:length(front_points{i, 1})
         point = front_points{i, 1}(:,j);
