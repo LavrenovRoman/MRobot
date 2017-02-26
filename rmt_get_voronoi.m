@@ -142,7 +142,7 @@ for i=1:length(All_cells_Number)
   end    
 end
 
-Temp_Edge=unique(Temp_Edge,'rows');
+Temp_Edge=unique(Temp_Edge,'rows');   % Temp_Edge - индексы пар точек из [X_Total_points' Y_Total_points']  
 %Temp_Edge(1,:) = [];
 
 %Delete duplicate edges like (1, 2) and (2, 1)

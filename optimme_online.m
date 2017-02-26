@@ -53,6 +53,8 @@ if n>0
     if(WINDOWS)
         draw_obstacle_map(figure_to_draw);
     end
+    x_center = zeros(n,1);
+    y_center = zeros(n,1);
     radii = zeros(n,1);
     for i=1:n
         [tx,ty] = ginput(2);
@@ -104,6 +106,39 @@ start_point = [stx(1),sty(1)];
 target_point = [stx(2),sty(2)];
 
 via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
+
+if n>0
+    i=1;
+    while i<length(radii)
+        x_i = x_center(i);
+        y_i = y_center(i);
+        r_i = radii(i);
+        j = 1;
+        while j<=length(radii)
+            if i==j
+                j = j+1;
+                continue;
+            end
+            x_j = x_center(j);
+            y_j = y_center(j);
+            r_j = radii(j);
+            rx = x_i - x_j;
+            ry = y_i - y_j;
+            dist = sqrt(rx^2 + ry^2);
+            if (dist+r_j)<=r_i
+                x_center(j) = [];
+                y_center(j) = [];
+                radii(j) = [];
+                break;
+            else
+                j = j+1;
+            end
+        end
+        if j>length(radii)
+            i=i+1;
+        end;
+    end        
+end
 
 intersectionArray = cell(length(radii), 1);
 circles_intersection_points = cell(length(radii), length(radii));
