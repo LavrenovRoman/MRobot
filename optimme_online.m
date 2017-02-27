@@ -53,6 +53,8 @@ if n>0
     if(WINDOWS)
         draw_obstacle_map(figure_to_draw);
     end
+    x_center = zeros(n,1);
+    y_center = zeros(n,1);
     radii = zeros(n,1);
     for i=1:n
         [tx,ty] = ginput(2);
@@ -105,265 +107,289 @@ target_point = [stx(2),sty(2)];
 
 via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
 
-useVoronoiDiagram = 0;
-
-if useVoronoiDiagram==1
-    intersectionArray = cell(length(radii), 1);
-    circles_intersection_points = cell(length(radii), length(radii));
-    circles_intersection = cell(length(radii), 1);
-    %temp = zeros(2,1);
-    %vec = zeros(2,1);
-    for i=1:length(radii)
-        circles_intersection{i,1} = [circles_intersection{i,1} i];
+if n>0
+    i=1;
+    while i<length(radii)
         x_i = x_center(i);
         y_i = y_center(i);
         r_i = radii(i);
-        for j=i+1:length(radii)
+        j = 1;
+        while j<=length(radii)
+            if i==j
+                j = j+1;
+                continue;
+            end
             x_j = x_center(j);
             y_j = y_center(j);
             r_j = radii(j);
             rx = x_i - x_j;
             ry = y_i - y_j;
             dist = sqrt(rx^2 + ry^2);
-            if dist<r_i+r_j
-                %{
-                d_i = dist*r_i/(r_i + r_j);
-                l = sqrt(r_i^2 - d_i^2);
-                temp(1,1) = x_j - x_i;
-                temp(2,1) = y_j - y_i;
-                x_c = (x_j + x_i)/2;
-                y_c = (y_j + y_i)/2;
-                if temp(2,1) == 0
-                    vec(1,1) = 0;
-                    vec(2,1) = 1;
-                else 
-                    vec(1,1) = 1;
-                    vec(2,1) = -1*temp(1,1)/temp(2,1);
-                    sum = sqrt(vec(1,1)^2 + vec(2,1)^2);
-                    vec(1,1) = vec(1,1)/sum;
-                    vec(2,1) = vec(2,1)/sum;
-                end;
-                xs = zeros(2,1);
-                ys = zeros(2,1);
-                xs(1,1) = x_c + vec(1,1)*l;
-                xs(2,1) = x_c - vec(1,1)*l;
-                ys(1,1) = y_c + vec(2,1)*l;
-                ys(2,1) = y_c - vec(2,1)*l;
-                %}
-                syms x y;
-                h1=(y - y_center(i))^2 + (x - x_center(i))^2 - radii(i)^2;
-                h2=(y - y_center(j))^2 + (x - x_center(j))^2 - radii(j)^2;
-                [xx, yy]=solve(h1,h2,'Real',true);
-                circles_intersection_points{i,j} = [double(xx(1,1)) double(yy(1,1))];
-                circles_intersection_points{j,i} = [double(xx(2,1)) double(yy(2,1))];
-                intersectionArray{i,1} = [intersectionArray{i,1} j];
-                intersectionArray{j,1} = [i intersectionArray{j,1}];
-                circles_intersection{i,1} = [circles_intersection{i,1} j];
-                circles_intersection{j,1} = [i circles_intersection{j,1}];
-            end;
-        end;
-    end;
-
-    it = 1;
-    while it < length(circles_intersection)
-        findI = 0;
-        for i=it+1:length(circles_intersection)
-            Inter = intersect(circles_intersection{it,1}, circles_intersection{i,1});
-            if ~isempty(Inter)
-                circles_intersection{it,1} = union(circles_intersection{it,1}, circles_intersection{i,1});
-                circles_intersection(i) = [];
-                findI = i;
+            if (dist+r_j)<=r_i
+                x_center(j) = [];
+                y_center(j) = [];
+                radii(j) = [];
                 break;
-            end;
-        end;
-        if findI == 0
-            it = it + 1;
-        end;
-    end; 
-
-    front_points = cell(length(radii)^2, 1);
-    f_p = 1;
-    step = 1;
-    b = zeros(2,1);
-    for i=1:length(radii)
-        t = ceil(2*pi*radii(i)/step); 
-        d = ceil(360/t);
-        endCircPoint = 0;
-        temp = zeros(2,1);
-        beginBad = -1;
-        for a=d:d:360
-            x = x_center(i) + radii(i)*cos(degtorad(a));
-            y = y_center(i) + radii(i)*sin(degtorad(a));
-            findC = 0;
-            for c=1:length(intersectionArray{i,1})
-                circ = intersectionArray{i,1}(1,c);
-                dist = sqrt((x-x_center(circ))^2 + (y-y_center(circ))^2);
-                if (dist < radii(circ))
-                    findC = circ;
-                    break;
-                end;
-            end;
-            b(1,1) = x;
-            b(2,1) = y;
-            if findC == 0
-                if temp(1,1)~=0 && temp(2,1)~=0
-                    front_points{f_p,1} = [front_points{f_p,1} temp];
-                    temp = zeros(2,1);
-                end;
-                front_points{f_p,1} = [front_points{f_p,1} b];
-                endCircPoint = 1;            
-                if a == d
-                    beginBad = f_p;
-                end;
             else
-                dist1 = sqrt((x-circles_intersection_points{i, findC}(1,1))^2 + (y-circles_intersection_points{i, findC}(1,2))^2);
-                dist2 = sqrt((x-circles_intersection_points{findC, i}(1,1))^2 + (y-circles_intersection_points{findC, i}(1,2))^2);
-                if dist1<dist2
-                    temp(1,1) = circles_intersection_points{i, findC}(1,1);
-                    temp(2,1) = circles_intersection_points{i, findC}(1,2);
-                else
-                    temp(1,1) = circles_intersection_points{findC,i}(1,1);
-                    temp(2,1) = circles_intersection_points{findC,i}(1,2);
-                end;
-                if endCircPoint == 1
-                    front_points{f_p,1} = [front_points{f_p,1} temp];
-                    f_p = f_p + 1;
-                    temp = zeros(2,1);
-                    endCircPoint = 0;
-                end;                
-            end;
+                j = j+1;
+            end
+        end
+        if j>length(radii)
+            i=i+1;
         end;
-        if beginBad ~= -1
-            if beginBad~=f_p 
-                front_points{beginBad,1} = [front_points{f_p,1} front_points{beginBad,1}];
-                front_points(f_p) = [];
-            else
-                f_p = f_p + 1;
-                %front_points{beginBad,1} = [front_points{beginBad,1}(:, length(front_points{beginBad,1})) front_points{beginBad,1}];
-            end;
-        end;
-    end;
+    end        
+end
 
-    for i=length(front_points):-1:1
-        if isempty(front_points{i, 1})
-            front_points(i) = [];
-        end;
-    end;
-
-    f_p_it = 1;
-    while f_p_it < length(front_points)
-        findI = 0;
-        i = f_p_it+1;
-        while i<length(front_points)+1
-            if isempty(front_points{i, 1})
-                break;
+intersectionArray = cell(length(radii), 1);
+circles_intersection_points = cell(length(radii), length(radii));
+circles_intersection = cell(length(radii), 1);
+%temp = zeros(2,1);
+%vec = zeros(2,1);
+for i=1:length(radii)
+    circles_intersection{i,1} = [circles_intersection{i,1} i];
+    x_i = x_center(i);
+    y_i = y_center(i);
+    r_i = radii(i);
+    for j=i+1:length(radii)
+        x_j = x_center(j);
+        y_j = y_center(j);
+        r_j = radii(j);
+        rx = x_i - x_j;
+        ry = y_i - y_j;
+        dist = sqrt(rx^2 + ry^2);
+        if dist<r_i+r_j
+            %{
+            d_i = dist*r_i/(r_i + r_j);
+            l = sqrt(r_i^2 - d_i^2);
+            temp(1,1) = x_j - x_i;
+            temp(2,1) = y_j - y_i;
+            x_c = (x_j + x_i)/2;
+            y_c = (y_j + y_i)/2;
+            if temp(2,1) == 0
+                vec(1,1) = 0;
+                vec(2,1) = 1;
+            else 
+                vec(1,1) = 1;
+                vec(2,1) = -1*temp(1,1)/temp(2,1);
+                sum = sqrt(vec(1,1)^2 + vec(2,1)^2);
+                vec(1,1) = vec(1,1)/sum;
+                vec(2,1) = vec(2,1)/sum;
             end;
-            point = front_points{f_p_it, 1}(:,length(front_points{f_p_it, 1}));
-            p1 = front_points{i, 1}(:,1);
-            if p1 == point
-                front_points{i, 1}(:,1) = [];
-                front_points{f_p_it, 1} = [front_points{f_p_it, 1} front_points{i, 1}];
-                front_points(i) = [];
-                findI = 1;
-                break;
-            end;
-            point = front_points{f_p_it, 1}(:,1);
-            p2 = front_points{i, 1}(:,length(front_points{i, 1}));
-            if p2 == point
-                front_points{f_p_it, 1}(:,1) = [];
-                front_points{f_p_it, 1} = [front_points{i, 1} front_points{f_p_it, 1} ];
-                front_points(i) = [];
-                findI = 1;
-                break;
-            end;
-            i = i + 1;
-        end;
-        if findI == 0
-            f_p_it = f_p_it + 1;
+            xs = zeros(2,1);
+            ys = zeros(2,1);
+            xs(1,1) = x_c + vec(1,1)*l;
+            xs(2,1) = x_c - vec(1,1)*l;
+            ys(1,1) = y_c + vec(2,1)*l;
+            ys(2,1) = y_c - vec(2,1)*l;
+            %}
+            syms x y;
+            h1=(y - y_center(i))^2 + (x - x_center(i))^2 - radii(i)^2;
+            h2=(y - y_center(j))^2 + (x - x_center(j))^2 - radii(j)^2;
+            [xx, yy]=solve(h1,h2,'Real',true);
+            circles_intersection_points{i,j} = [double(xx(1,1)) double(yy(1,1))];
+            circles_intersection_points{j,i} = [double(xx(2,1)) double(yy(2,1))];
+            intersectionArray{i,1} = [intersectionArray{i,1} j];
+            intersectionArray{j,1} = [i intersectionArray{j,1}];
+            circles_intersection{i,1} = [circles_intersection{i,1} j];
+            circles_intersection{j,1} = [i circles_intersection{j,1}];
         end;
     end;
-
-    clf(figure_to_draw);
-    draw_obstacle_map(figure_to_draw);
-
-    while length(front_points) > length(circles_intersection)
-        minFP = 10000000;
-        minFPi = 0;
-        for i=1:length(front_points)
-            if minFP > length(front_points{i, 1})
-                minFP = length(front_points{i, 1});
-                minFPi = i;
-            end;
-        end;
-        front_points(minFPi) = [];
-    end;
-
-    clf(figure_to_draw);
-    draw_obstacle_map(figure_to_draw);
-
-    limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
-    for i=1:length(front_points)
-        for j=1:length(front_points{i, 1})
-            point = front_points{i, 1}(:,j);
-            if limits(1,1) > point(1,1) 
-                limits(1,1) = point(1,1);
-            end;
-            if limits(1,2) < point(1,1) 
-                limits(1,2) = point(1,1);
-            end;
-            if limits(1,3) > point(2,1) 
-                limits(1,3) = point(2,1);
-            end;
-            if limits(1,4) < point(2,1) 
-                limits(1,4) = point(2,1);
-            end;
-        end;
-    end;
-
-    dx = (limits(1,2) - limits(1,1))/20;
-    dy = (limits(1,4) - limits(1,3))/20;
-    limits(1,1) = limits(1,1)-dx;
-    limits(1,2) = limits(1,2)+dx;
-    limits(1,3) = limits(1,3)-dy;
-    limits(1,4) = limits(1,4)+dy;
-
-    epsilonvoronoi = step;
-
-    obstacles = front_points';
-    for i=1:length(obstacles)
-        obstacles{1, i} = obstacles{1, i}';
-    end;
-
-    [X_Total_points,Y_Total_points, All_cells_Number, Cell_start, X1] = rmt_voronoi_epsi(length(circles_intersection), limits,epsilonvoronoi,obstacles);
-
-    [trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
-                        VertWithoutCurve, Edges, Verts] = rmt_get_voronoi(limits, (length(circles_intersection)+1), start_point, ...
-                        target_point, X_Total_points, Y_Total_points, ...
-                        All_cells_Number, Cell_start, X1, 1);
-
-    k = 1;
-    shortest_path(1, 1) = trajDV(1,1);
-    shortest_path(2, 1) = trajDV(1,2);
-    for i=2:length(trajDV(:,1))
-        p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
-        p2 = [trajDV(i, 1) trajDV(i, 2)];
-        for c=1:length(radii)
-            x = [x_center(c) y_center(c)];
-            r_c = radii(c);
-            dist = dist_point_segment(x, p1, p2);
-            if dist<r_c
-                k = k + 2;
-                shortest_path(k, 1) = trajDV(i-1,1);
-                shortest_path(k+1, 1) = trajDV(i-1,2);
-                break;
-            end;
-        end;
-    end;
-    shortest_path(1, :) = [];
-    shortest_path(1, :) = [];
-else
-    shortest_path = [];
 end;
+
+it = 1;
+while it < length(circles_intersection)
+    findI = 0;
+    for i=it+1:length(circles_intersection)
+        Inter = intersect(circles_intersection{it,1}, circles_intersection{i,1});
+        if ~isempty(Inter)
+            circles_intersection{it,1} = union(circles_intersection{it,1}, circles_intersection{i,1});
+            circles_intersection(i) = [];
+            findI = i;
+            break;
+        end;
+    end;
+    if findI == 0
+        it = it + 1;
+    end;
+end; 
+
+front_points = cell(length(radii)^2, 1);
+f_p = 1;
+step = 1;
+b = zeros(2,1);
+for i=1:length(radii)
+    t = ceil(2*pi*radii(i)/step); 
+    d = ceil(360/t);
+    endCircPoint = 0;
+    temp = zeros(2,1);
+    beginBad = -1;
+    for a=d:d:360
+        x = x_center(i) + radii(i)*cos(degtorad(a));
+        y = y_center(i) + radii(i)*sin(degtorad(a));
+        findC = 0;
+        for c=1:length(intersectionArray{i,1})
+            circ = intersectionArray{i,1}(1,c);
+            dist = sqrt((x-x_center(circ))^2 + (y-y_center(circ))^2);
+            if (dist < radii(circ))
+                findC = circ;
+                break;
+            end;
+        end;
+        b(1,1) = x;
+        b(2,1) = y;
+        if findC == 0
+            if temp(1,1)~=0 && temp(2,1)~=0
+                front_points{f_p,1} = [front_points{f_p,1} temp];
+                temp = zeros(2,1);
+            end;
+            front_points{f_p,1} = [front_points{f_p,1} b];
+            endCircPoint = 1;            
+            if a == d
+                beginBad = f_p;
+            end;
+        else
+            dist1 = sqrt((x-circles_intersection_points{i, findC}(1,1))^2 + (y-circles_intersection_points{i, findC}(1,2))^2);
+            dist2 = sqrt((x-circles_intersection_points{findC, i}(1,1))^2 + (y-circles_intersection_points{findC, i}(1,2))^2);
+            if dist1<dist2
+                temp(1,1) = circles_intersection_points{i, findC}(1,1);
+                temp(2,1) = circles_intersection_points{i, findC}(1,2);
+            else
+                temp(1,1) = circles_intersection_points{findC,i}(1,1);
+                temp(2,1) = circles_intersection_points{findC,i}(1,2);
+            end;
+            if endCircPoint == 1
+                front_points{f_p,1} = [front_points{f_p,1} temp];
+                f_p = f_p + 1;
+                temp = zeros(2,1);
+                endCircPoint = 0;
+            end;                
+        end;
+    end;
+    if beginBad ~= -1
+        if beginBad~=f_p 
+            front_points{beginBad,1} = [front_points{f_p,1} front_points{beginBad,1}];
+            front_points(f_p) = [];
+        else
+            f_p = f_p + 1;
+            %front_points{beginBad,1} = [front_points{beginBad,1}(:, length(front_points{beginBad,1})) front_points{beginBad,1}];
+        end;
+    end;
+end;
+
+for i=length(front_points):-1:1
+    if isempty(front_points{i, 1})
+        front_points(i) = [];
+    end;
+end;
+
+f_p_it = 1;
+while f_p_it < length(front_points)
+    findI = 0;
+    i = f_p_it+1;
+    while i<length(front_points)+1
+        if isempty(front_points{i, 1})
+            break;
+        end;
+        point = front_points{f_p_it, 1}(:,length(front_points{f_p_it, 1}));
+        p1 = front_points{i, 1}(:,1);
+        if p1 == point
+            front_points{i, 1}(:,1) = [];
+            front_points{f_p_it, 1} = [front_points{f_p_it, 1} front_points{i, 1}];
+            front_points(i) = [];
+            findI = 1;
+            break;
+        end;
+        point = front_points{f_p_it, 1}(:,1);
+        p2 = front_points{i, 1}(:,length(front_points{i, 1}));
+        if p2 == point
+            front_points{f_p_it, 1}(:,1) = [];
+            front_points{f_p_it, 1} = [front_points{i, 1} front_points{f_p_it, 1} ];
+            front_points(i) = [];
+            findI = 1;
+            break;
+        end;
+        i = i + 1;
+    end;
+    if findI == 0
+        f_p_it = f_p_it + 1;
+    end;
+end;
+
+while length(front_points) > length(circles_intersection)
+    minFP = 10000000;
+    minFPi = 0;
+    for i=1:length(front_points)
+        if minFP > length(front_points{i, 1})
+            minFP = length(front_points{i, 1});
+            minFPi = i;
+        end;
+    end;
+    front_points(minFPi) = [];
+end;
+
+clf(figure_to_draw);
+draw_obstacle_map(figure_to_draw);
+
+limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
+for i=1:length(front_points)
+    for j=1:length(front_points{i, 1})
+        point = front_points{i, 1}(:,j);
+        if limits(1,1) > point(1,1) 
+            limits(1,1) = point(1,1);
+        end;
+        if limits(1,2) < point(1,1) 
+            limits(1,2) = point(1,1);
+        end;
+        if limits(1,3) > point(2,1) 
+            limits(1,3) = point(2,1);
+        end;
+        if limits(1,4) < point(2,1) 
+            limits(1,4) = point(2,1);
+        end;
+    end;
+end;
+
+dx = (limits(1,2) - limits(1,1))/20;
+dy = (limits(1,4) - limits(1,3))/20;
+limits(1,1) = limits(1,1)-dx;
+limits(1,2) = limits(1,2)+dx;
+limits(1,3) = limits(1,3)-dy;
+limits(1,4) = limits(1,4)+dy;
+
+epsilonvoronoi = step;
+
+obstacles = front_points';
+for i=1:length(obstacles)
+    obstacles{1, i} = obstacles{1, i}';
+end;
+
+[X_Total_points,Y_Total_points, All_cells_Number, Cell_start, X1] = rmt_voronoi_epsi(length(circles_intersection), limits,epsilonvoronoi,obstacles);
+
+[trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
+                    VertWithoutCurve, Edges, Verts] = rmt_get_voronoi(limits, (length(circles_intersection)+1), start_point, ...
+                    target_point, X_Total_points, Y_Total_points, ...
+                    All_cells_Number, Cell_start, X1, 1);
+       
+k = 1;
+shortest_path(1, 1) = trajDV(1,1);
+shortest_path(2, 1) = trajDV(1,2);
+for i=2:length(trajDV(:,1))
+    p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
+    p2 = [trajDV(i, 1) trajDV(i, 2)];
+    for c=1:length(radii)
+        x = [x_center(c) y_center(c)];
+        r_c = radii(c);
+        dist = dist_point_segment(x, p1, p2);
+        if dist<r_c
+            k = k + 2;
+            shortest_path(k, 1) = trajDV(i-1,1);
+            shortest_path(k+1, 1) = trajDV(i-1,2);
+            break;
+        end;
+    end;
+end;
+shortest_path(1, :) = [];
+shortest_path(1, :) = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
