@@ -358,6 +358,36 @@ if UseVoronoi==1
     limits(1,2) = limits(1,2)+dx;
     limits(1,3) = limits(1,3)-dy;
     limits(1,4) = limits(1,4)+dy;
+    
+    
+    s_x = linspace(limits(1,1),limits(1,2),101);
+    s_y = linspace(limits(1,3),limits(1,4),101);
+    
+    fp = zeros(length(s_x),length(s_y));
+    
+    show_potent_field=1;
+    if (show_potent_field==1)
+        alpha = 0.1;
+        for i=1:length(s_x)
+            for j=1:length(s_y)
+                for k=1:length(radii)
+
+                x_0 = x_center(k);
+                y_0 = y_center(k);
+                r_0 = radii(k);
+
+                rx = s_x(i) - x_0;
+                ry = s_y(j) - y_0;
+                dist = r_0 - sqrt(rx^2 + ry^2);
+
+                fp(i,j) = fp(i,j) + beta *(1+tanh(alpha * dist));
+                %f2 = max(f2,beta *(1+tanh(alpha * dist)));
+                end;
+            end;
+        end;
+        figure
+        mesh(fp)
+    end;    
 
     epsilonvoronoi = step;
 
