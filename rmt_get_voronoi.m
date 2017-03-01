@@ -402,8 +402,8 @@ for i=1:size(CurvesInBeginPath,2)
     fprintf(' %5.0f', CurvesInBeginPath(1,i))
 end;
 fprintf('\n');
-%{
 
+%{
 combineCurves = cell(CurvesSize, CurvesSize);
 tempCombine1 = sort(CurvesInBeginPath);
 for i=1:length(CurvesInBeginPath)
@@ -412,7 +412,7 @@ end;
 
 number = 2;
 curves_delete = 5:1:CurvesSize;
-for combinations = 1:3
+for combinations = 1:2
     Comb = nchoosek(curves_delete, combinations);
     count_added = 0;
     for c=1:size(Comb, 1)
@@ -589,6 +589,9 @@ for combinations = 1:3
             fprintf(' do not added\n');
         end;
         %break;%!!!!!!!!!
+        if number == 3
+            break;
+        end
     end
 end
 

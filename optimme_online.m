@@ -140,7 +140,10 @@ if n>0
     end        
 end
 
-UseVoronoi = 1;
+
+tic; 
+
+UseVoronoi = 0;
 shortest_path = [];
 if UseVoronoi==1 
     intersectionArray = cell(length(radii), 1);
@@ -365,9 +368,9 @@ if UseVoronoi==1
     
     fp = zeros(length(s_x),length(s_y));
     
-    show_potent_field=1;
+    show_potent_field=0;
     if (show_potent_field==1)
-        alpha = 0.1;
+        sh_alpha = 0.1;
         for i=1:length(s_x)
             for j=1:length(s_y)
                 for k=1:length(radii)
@@ -380,7 +383,7 @@ if UseVoronoi==1
                 ry = s_y(j) - y_0;
                 dist = r_0 - sqrt(rx^2 + ry^2);
 
-                fp(i,j) = fp(i,j) + beta *(1+tanh(alpha * dist));
+                fp(i,j) = fp(i,j) + beta *(1+tanh(sh_alpha * dist));
                 %f2 = max(f2,beta *(1+tanh(alpha * dist)));
                 end;
             end;
@@ -424,6 +427,11 @@ if UseVoronoi==1
     shortest_path(1, :) = [];
     shortest_path(1, :) = [];
 end
+
+t1=toc;
+t1
+
+tic; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
@@ -476,6 +484,10 @@ for vector_counter = 2:length(alpha_vector)
             iteration_number = vector_counter-1;
             save('result', 'previous_iteration_spline_xyt','start_point','target_point','n','map_number','iteration_number');
         end
+        
+        t2=toc;
+        t2
+        
         return;
     end
 
@@ -491,6 +503,8 @@ for vector_counter = 2:length(alpha_vector)
 
 end
 
+t2=toc;
+t2
 
 next = input('\nFirst stage search failed. To continue with second search stage press "1". To stop - press "0"\n');
 

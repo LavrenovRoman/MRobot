@@ -12,10 +12,10 @@ global intersect_y_center;
 global front_points;
 
 %vizual stuff
-axis_xmin = -20;
-axis_xmax = 140;
-axis_ymin = -20;
-axis_ymax = 140;
+axis_xmin = -40;
+axis_xmax = 160;
+axis_ymin = -40;
+axis_ymax = 160;
 
 frame_xmin = axis_xmin - 2;
 frame_xmax = axis_xmax + 2;

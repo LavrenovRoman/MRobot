@@ -31,6 +31,8 @@ fprintf('\n\t*\t8 - romb                                                        
 fprintf('\n\t*\t9 - mountain pass                                                   *');
 fprintf('\n\t*\t10 - mountain pass with local minimum                               *');
 fprintf('\n\t*\t11 - groups with local minimum                                      *');
+fprintf('\n\t*\t12 - small central park                                             *');
+fprintf('\n\t*\t13 - small central park +                                           *');
 fprintf('\n\t*\telse - closed obstacle                                              *');
 fprintf('\n\t*************************************************************************');
 map_number = input('\n>');
