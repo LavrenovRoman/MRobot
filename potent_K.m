@@ -54,8 +54,10 @@ end
 
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vstart = 100 - (100*vis_start_cost(path) /lengthpath);
-vtargt = 100 - (100*vis_target_cost(path)/lengthpath);
+hoefV = 1;
+
+vstart = hoefV*(100 - (100*vis_start_cost(path) /lengthpath));
+vtargt = hoefV*(100 - (100*vis_target_cost(path)/lengthpath));
 obst =  quad('potent_cost_K',0,direct,[],[],spline_xyt);
 hal = sqrt(quad('halakut_K',0,direct,[],[],spline_xyt));
 len = 0.5*quad('arc_length',0,direct,[],[],spline_xyt);

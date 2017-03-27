@@ -173,7 +173,7 @@ for i=1:length(Temp_Edge)
     Edges(3,i)=Voro_Vertex(Temp_Edge(i,1),2);
     Edges(4,i)=Voro_Vertex(Temp_Edge(i,2),2);
     if Is_draw==1
-        plot([Edges(1,i) Edges(2,i)],[Edges(3,i) Edges(4,i)],'color',[.8 .8 .8]);
+        plot([Edges(1,i) Edges(2,i)],[Edges(3,i) Edges(4,i)],'color',[1 .0 .0]);
     end;
 end
 %Edges(1, :) = Edge_X1;
@@ -612,7 +612,7 @@ for i=1:length(PathWithoutCurve)
 end;
 
 [Dummy MinCost]=min(CostWithoutCurve);
-path = PathWithoutCurve{MinCost,1};
+path = PathWithoutCurve{2,1};
 fprintf(' DV with min cost is %5.0f\n', MinCost);
 %}
 

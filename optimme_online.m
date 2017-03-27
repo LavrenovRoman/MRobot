@@ -143,7 +143,7 @@ end
 
 tic; 
 
-UseVoronoi = 0;
+UseVoronoi = 1;
 shortest_path = [];
 if UseVoronoi==1 
     intersectionArray = cell(length(radii), 1);
@@ -321,6 +321,9 @@ if UseVoronoi==1
         end;
     end;
 
+    clf(figure_to_draw);
+    draw_obstacle_map(figure_to_draw);
+
     while length(front_points) > length(circles_intersection)
         minFP = 10000000;
         minFPi = 0;
@@ -370,7 +373,8 @@ if UseVoronoi==1
     
     show_potent_field=0;
     if (show_potent_field==1)
-        sh_alpha = 0.1;
+        sh_beta = 4;
+        sh_alpha = 0.2;
         for i=1:length(s_x)
             for j=1:length(s_y)
                 for k=1:length(radii)
@@ -383,7 +387,7 @@ if UseVoronoi==1
                 ry = s_y(j) - y_0;
                 dist = r_0 - sqrt(rx^2 + ry^2);
 
-                fp(i,j) = fp(i,j) + beta *(1+tanh(sh_alpha * dist));
+                fp(i,j) = fp(i,j) + sh_beta *(1+tanh(sh_alpha * dist));
                 %f2 = max(f2,beta *(1+tanh(alpha * dist)));
                 end;
             end;
