@@ -4,8 +4,6 @@ global radii;
 global x_center;
 global y_center;
 
-obstacles_crossed = zeros(length(radii), 1);
-
 f = 0;
 fin = length(path(:,1));
 for i=fin-1:-1:1
@@ -23,4 +21,3 @@ for i=fin-1:-1:1
     end;
 end;
 end
-
