@@ -58,6 +58,10 @@ hoefV = 1;
 
 [vmin, vmax, vaverage] = min_max_average_distance(path);
 
+safe_dist = 3;
+gamma = 20;
+c_min = gamma^(safe_dist-vmin);
+
 vstart = hoefV*(100 - (100*vis_start_cost(path) /lengthpath));
 vtargt = hoefV*(100 - (100*vis_target_cost(path)/lengthpath));
 obst =  quad('potent_cost_K',0,direct,[],[],spline_xyt);
@@ -66,7 +70,7 @@ len = 0.5*quad('arc_length',0,direct,[],[],spline_xyt);
 %len = 0;
 %hal = 0;
 %0.01*
-cost = obst + hal + len + 0*vstart + 0*vtargt;
+cost = obst + hal + len + 0*vstart + 0*vtargt + 0*c_min;
 
 for i=1:length(x(:,1))
     fprintf('%9g ', x(i,1));
@@ -74,7 +78,7 @@ end;
 fprintf('\n');
 
 %fprintf('obstacles = %9g  length = %9g  halakut = %9g  vstart = %9g  vtargt = %9g  ALL = %9g\n', obst, len, hal, vstart, vtargt, cost);
-fprintf('obstacles = %9g  length = %9g  halakut = %9g  min = %9g  max = %9g  avr = %9g  ALL = %9g\n', obst, len, hal, vmin, vmax, vaverage, cost);
+fprintf('obstacles = %9g  length = %9g  halakut = %9g  min = %9g  c_min = %9g  ALL = %9g\n', obst, len, hal, vmin, c_min, cost);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% plot to see the process :
 if(DEBUG)

@@ -38,6 +38,7 @@ front_points = [];
 direct = 2;
 
 %%%%%%%%%%%%%%%%%%%%%%% DATA FOR ITERATIONS %%%%%%%%%%%%%%%%%%%%%%%%
+%alpha_vector                = [0.01 0.01 0.01 0.01 0.01      0.01 0.01 0.01 0.01 0.01     0.01 0.01 0.01 0.01 0.01     0.1 0.1 0.1];
 alpha_vector                = [0.5 0.6 0.6 0.6 0.6      0.6 0.6 0.6 0.6 0.6     0.7 0.7 0.7 0.7 0.8     0.8 0.8 0.8];
 beta_vector                 = [4   4   8   12  16       24  32  64  128 256     32  64  128 256 32      64  128 256];
 number_of_iterations_vector = [250 250 250 250 250      200 200 200 200 200     150 150 150 150 150     100 100 100];
@@ -378,7 +379,7 @@ if UseVoronoi==1
     show_potent_field=0;
     if (show_potent_field==1)
         sh_beta = 4;
-        sh_alpha = 0.2;
+        sh_alpha = 0.5;
         for i=1:length(s_x)
             for j=1:length(s_y)
                 for k=1:length(radii)
