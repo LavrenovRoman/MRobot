@@ -91,26 +91,63 @@ if(WINDOWS)
 
     figure(figure_to_draw);
     plot(stx,sty,'o');
-    %start_point = [stx(1),sty(1)]
-    %target_point = [stx(2),sty(2)]
-    %plot((stx(1)+stx(2))./2,(sty(1)+sty(2))./2,'o');
 end
-%stx(1)= -3;  sty(1)=29; stx(2)= 80; sty(2)=51; %for park
-%stx(1)= -9;  sty(1)=44; stx(2)= 110; sty(2)=42; %for fig.9
-% stx(1)=-17; sty(1)=52; stx(2)=127; sty(2)=62;  %for fig.8
-%stx(1)=-2;  sty(1)=42; stx(2)= 98; sty(2)=67;  %fig 10
-%stx(1)=-2;  sty(1)=44; stx(2)= 98; sty(2)=67;
 
-% stx(1)=22; sty(1)=28; stx(2)=71; sty(2)=77; %fig 63
-%stx(1)= 52; sty(1)=36; stx(2)=71; sty(2)=73; %fig 63
+limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
+for i=1:length(radii)
+    x_c = x_center(1,i);
+    y_c = y_center(1,i);
+    r_c = radii(1,i);
+    if limits(1,1) > x_c - r_c 
+        limits(1,1) = x_c - r_c;
+    end;
+    if limits(1,2) < x_c + r_c 
+        limits(1,2) = x_c + r_c;
+    end;
+    if limits(1,3) > y_c - r_c 
+        limits(1,3) = y_c - r_c;
+    end;
+    if limits(1,4) < y_c + r_c 
+        limits(1,4) = y_c + r_c;
+    end;
+end;
+dx = (limits(1,2) - limits(1,1))/20;
+dy = (limits(1,4) - limits(1,3))/20;
+limits(1,1) = limits(1,1)-dx;
+limits(1,2) = limits(1,2)+dx;
+limits(1,3) = limits(1,3)-dy;
+limits(1,4) = limits(1,4)+dy;
+
+%create points
+points_cnt = 3000;
+rx=rand(points_cnt,1);
+ry=rand(points_cnt,1);
+for i=1:points_cnt
+    rx(i,1) = (rx(i,1) * (limits(1,2) - limits(1,1))) + limits(1,1);
+    ry(i,1) = (ry(i,1) * (limits(1,4) - limits(1,3))) + limits(1,3);
+    %plot(rx(i,1),ry(i,1),'o');
+end;
+for i=points_cnt:-1:1
+    for j=1:length(radii)
+        x_c = x_center(1,j);
+        y_c = y_center(1,j);
+        r_c = radii(1,j);
+        dist = sqrt((rx(i,1)-x_c)^2 + (ry(i,1)-y_c)^2);
+        if dist - r_c < 0.5
+            plot(rx(i,1),ry(i,1),'o');
+            rx(i) = [];
+            ry(i) = [];
+            break;
+        end;
+    end;
+end;
+points_cnt = length(rx);
+
+
 start_point = [stx(1),sty(1)];
 target_point = [stx(2),sty(2)];
 
 via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
-
-%x_center = [14.655976676384832; 23.664723032069972; 32.673469387755105; 47.087463556851320; 55.495626822157430];
-%y_center = [28.169096209912553; 34.174927113702610; 40.180758017492710; 47.387755102040810; 51.591836734693885];
-%radii    = [6.496299382614420; 6.468477844138253; 10.262768347145242; 3.798420979560850; 4.952535037185052];
 
 if n>0
     i=1;
@@ -344,31 +381,30 @@ if UseVoronoi==1
     clf(figure_to_draw);
     draw_obstacle_map(figure_to_draw);
 
-    limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
-    for i=1:length(front_points)
-        for j=1:length(front_points{i, 1})
-            point = front_points{i, 1}(:,j);
-            if limits(1,1) > point(1,1) 
-                limits(1,1) = point(1,1);
-            end;
-            if limits(1,2) < point(1,1) 
-                limits(1,2) = point(1,1);
-            end;
-            if limits(1,3) > point(2,1) 
-                limits(1,3) = point(2,1);
-            end;
-            if limits(1,4) < point(2,1) 
-                limits(1,4) = point(2,1);
-            end;
-        end;
-    end;
-
-    dx = (limits(1,2) - limits(1,1))/20;
-    dy = (limits(1,4) - limits(1,3))/20;
-    limits(1,1) = limits(1,1)-dx;
-    limits(1,2) = limits(1,2)+dx;
-    limits(1,3) = limits(1,3)-dy;
-    limits(1,4) = limits(1,4)+dy;
+%    limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
+%    for i=1:length(front_points)
+%        for j=1:length(front_points{i, 1})
+%            point = front_points{i, 1}(:,j);
+%            if limits(1,1) > point(1,1) 
+%                limits(1,1) = point(1,1);
+%            end;
+%            if limits(1,2) < point(1,1) 
+%                limits(1,2) = point(1,1);
+%            end;
+%            if limits(1,3) > point(2,1) 
+%                limits(1,3) = point(2,1);
+%            end;
+%            if limits(1,4) < point(2,1) 
+%                limits(1,4) = point(2,1);
+%            end;
+%        end;
+%    end;
+%    dx = (limits(1,2) - limits(1,1))/20;
+%    dy = (limits(1,4) - limits(1,3))/20;
+%    limits(1,1) = limits(1,1)-dx;
+%    limits(1,2) = limits(1,2)+dx;
+%    limits(1,3) = limits(1,3)-dy;
+%    limits(1,4) = limits(1,4)+dy;
     
     
     s_x = linspace(limits(1,1),limits(1,2),101);
