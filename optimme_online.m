@@ -119,7 +119,7 @@ limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
 %create points
-points_cnt = 3000;
+points_cnt = 1000;
 rx=rand(points_cnt,1);
 ry=rand(points_cnt,1);
 for i=1:points_cnt
@@ -142,6 +142,23 @@ for i=points_cnt:-1:1
     end;
 end;
 points_cnt = length(rx);
+pair_num = 0;
+pairs = zeros(points_cnt*points_cnt, 4);
+for i=1:points_cnt
+    for j=i+1:points_cnt
+        edge = [rx(i,1) ry(i,1) rx(j,1) ry(j,1)];
+        for k=1:length(radii)
+            point = [x_center(1,k) y_center(1,k)];
+            [dist pos] = distancePointEdge(point, edge);
+            if (dist < radii(1,k))
+                pair_num = pair_num + 1;
+                pairs(pair_num, :) = [rx(i,1) ry(i,1) rx(j,1) ry(j,1)];
+                break;
+            end
+        end
+    end
+end
+    
 
 
 start_point = [stx(1),sty(1)];
