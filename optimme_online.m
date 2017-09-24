@@ -408,6 +408,9 @@ for i=1:length(obstacles)
 end;
 [X_Total_points,Y_Total_points, All_cells_Number, Cell_start, X1] = rmt_voronoi_epsi(length(circles_intersection), limits,epsilonvoronoi,obstacles);
 
+[ Vertex, Voro_Vertex, Temp_Edge, UsesVertexes, Edges, Verts, CurvesSize, CurvesVertexes] = create_voronoi_diagram( limits, ...
+                        (length(circles_intersection)+1), X_Total_points, Y_Total_points, All_cells_Number, Cell_start, 1);
+
 %for pts=1:lenght(pairs)
 
 %    start_point = [pairs(pts, 1), pairs(pts, 2)];
@@ -415,38 +418,34 @@ end;
 start_point = [stx(1),sty(1)];
 target_point = [stx(2),sty(2)];
 
-via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
+tic;
 
-UseVoronoi = 1;
-shortest_path = [];
-if UseVoronoi==1 
-    
-    [trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
-                        VertWithoutCurve, Edges, Verts] = rmt_get_voronoi(limits, (length(circles_intersection)+1), start_point, ...
-                        target_point, X_Total_points, Y_Total_points, ...
-                        All_cells_Number, Cell_start, X1, 1);
+shortest_path = [];    
+[trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
+                    VertWithoutCurve] = rmt_get_voronoi(Vertex, Voro_Vertex, CurvesSize, Temp_Edge, UsesVertexes, CurvesVertexes, ...
+                    (length(circles_intersection)+1), start_point, ...
+                    target_point, X1, 1);
 
-    k = 1;
-    shortest_path(1, 1) = trajDV(1,1);
-    shortest_path(2, 1) = trajDV(1,2);
-    for i=2:length(trajDV(:,1))
-        p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
-        p2 = [trajDV(i, 1) trajDV(i, 2)];
-        for c=1:length(radii)
-            x = [x_center(c) y_center(c)];
-            r_c = radii(c);
-            dist = dist_point_segment(x, p1, p2);
-            if dist<r_c
-                k = k + 2;
-                shortest_path(k, 1) = trajDV(i-1,1);
-                shortest_path(k+1, 1) = trajDV(i-1,2);
-                break;
-            end;
+k = 1;
+shortest_path(1, 1) = trajDV(1,1);
+shortest_path(2, 1) = trajDV(1,2);
+for i=2:length(trajDV(:,1))
+    p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
+    p2 = [trajDV(i, 1) trajDV(i, 2)];
+    for c=1:length(radii)
+        x = [x_center(c) y_center(c)];
+        r_c = radii(c);
+        dist = dist_point_segment(x, p1, p2);
+        if dist<r_c
+            k = k + 2;
+            shortest_path(k, 1) = trajDV(i-1,1);
+            shortest_path(k+1, 1) = trajDV(i-1,2);
+            break;
         end;
     end;
-    shortest_path(1, :) = [];
-    shortest_path(1, :) = [];
-end
+end;
+shortest_path(1, :) = [];
+shortest_path(1, :) = [];
 
 t1=toc;
 t1
@@ -461,6 +460,7 @@ beta = beta_vector(vector_counter);
 number_of_iterations = number_of_iterations_vector(vector_counter);
 
 if isempty(shortest_path)
+    via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
     [new_points, spline_xyt]  = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
 else
     [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);

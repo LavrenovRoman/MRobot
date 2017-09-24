@@ -1,4 +1,4 @@
-function [ Vertex, Voro_Vertex, Temp_Edge, UsesVertexes] = create_voronoi_diagram( limits, ...
+function [ Vertex, Voro_Vertex, Temp_Edge, UsesVertexes, Edges, Verts, CurvesSize, CurvesVertexes] = create_voronoi_diagram( limits, ...
     Num_Object, X_Total_points, Y_Total_points, All_cells_Number, Cell_start, Is_draw)
 %CREATE Summary of this function goes here
 %   Detailed explanation goes here
@@ -191,6 +191,9 @@ for i=1:N
 end
 
 AllNeirboursVertexes = cell(N, 1);
+
+%Minimum Distance
+M = length(Temp_Edge);
 
 for i = 1:M
     a= find(Vertex==Temp_Edge(i,1));
