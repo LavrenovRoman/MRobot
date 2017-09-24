@@ -154,7 +154,7 @@ limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
 %%%%%%%%%%%%%%%%%%% Calculate points_cnt points %%%%%%%%%%%%%%%%%%%%
-points_cnt = 100;
+points_cnt = 6;
 rx=rand(points_cnt,1);
 ry=rand(points_cnt,1);
 for i=1:points_cnt
@@ -411,120 +411,164 @@ end;
 [ Vertex, Voro_Vertex, Temp_Edge, UsesVertexes, Edges, Verts, CurvesSize, CurvesVertexes] = create_voronoi_diagram( limits, ...
                         (length(circles_intersection)+1), X_Total_points, Y_Total_points, All_cells_Number, Cell_start, 1);
 
-%for pts=1:lenght(pairs)
+%start_point = [stx(1),sty(1)];
+%target_point = [stx(2),sty(2)];
+%text = datestr(now);
+text = strcat(int2str(map_number), '.txt');
+fid = fopen(text,'w');
 
-%    start_point = [pairs(pts, 1), pairs(pts, 2)];
-%    target_point = [pairs(pts, 3), pairs(pts, 4)];
-start_point = [stx(1),sty(1)];
-target_point = [stx(2),sty(2)];
-
-tic;
-
-shortest_path = [];    
-[trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
-                    VertWithoutCurve] = rmt_get_voronoi(Vertex, Voro_Vertex, CurvesSize, Temp_Edge, UsesVertexes, CurvesVertexes, ...
-                    (length(circles_intersection)+1), start_point, ...
-                    target_point, X1, 1);
-
-k = 1;
-shortest_path(1, 1) = trajDV(1,1);
-shortest_path(2, 1) = trajDV(1,2);
-for i=2:length(trajDV(:,1))
-    p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
-    p2 = [trajDV(i, 1) trajDV(i, 2)];
-    for c=1:length(radii)
-        x = [x_center(c) y_center(c)];
-        r_c = radii(c);
-        dist = dist_point_segment(x, p1, p2);
-        if dist<r_c
-            k = k + 2;
-            shortest_path(k, 1) = trajDV(i-1,1);
-            shortest_path(k+1, 1) = trajDV(i-1,2);
-            break;
-        end;
-    end;
-end;
-shortest_path(1, :) = [];
-shortest_path(1, :) = [];
-
-t1=toc;
-t1
-
-tic; 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 alpha = alpha_vector(vector_counter);
 beta = beta_vector(vector_counter);
 %filename = filename_vector(vector_counter);
 %number_of_iterations = 200;
 number_of_iterations = number_of_iterations_vector(vector_counter);
 
-if isempty(shortest_path)
-    via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
-    [new_points, spline_xyt]  = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
-else
+aver_time_new = 0;
+aver_time_old = 0;
+aver_iterate_new = 0;
+aver_iterate_old = 0;
+count_success_new = 0;
+count_success_old = 0;
+
+for pts=1:pair_num
+
+    start_point = [pairs(pts, 1), pairs(pts, 2)];
+    target_point = [pairs(pts, 3), pairs(pts, 4)];
+    
+    fprintf(fid,'begin %3.5f %3.5f\n',pairs(pts, 1),pairs(pts, 2));
+    fprintf(fid,'target %3.5f %3.5f\n',pairs(pts, 3),pairs(pts, 4));
+
+    %%%%%%%%%%%%%%%%%%% Find Path with Voronoi Diagram %%%%%%%%%%%%%%%%%%%%
+    tic;
+    shortest_path = [];    
+    [trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve,VertWithoutCurve] = rmt_get_voronoi(Vertex, Voro_Vertex, ...
+        CurvesSize, Temp_Edge, UsesVertexes, CurvesVertexes, (length(circles_intersection)+1), start_point, target_point, X1, 1);
+    k = 1;
+    shortest_path(1, 1) = trajDV(1,1);
+    shortest_path(2, 1) = trajDV(1,2);
+    for i=2:length(trajDV(:,1))
+        p1 = [shortest_path(k, 1) shortest_path(k+1, 1)];
+        p2 = [trajDV(i, 1) trajDV(i, 2)];
+        for c=1:length(radii)
+            x = [x_center(c) y_center(c)];
+            r_c = radii(c);
+            dist = dist_point_segment(x, p1, p2);
+            if dist<r_c
+                k = k + 2;
+                shortest_path(k, 1) = trajDV(i-1,1);
+                shortest_path(k+1, 1) = trajDV(i-1,2);
+                break;
+            end;
+        end;
+    end;
+    shortest_path(1, :) = [];
+    shortest_path(1, :) = [];
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
-end;
-new_points
-if(WINDOWS)
-    print('-dbmp16m', filename_vector(vector_counter));
-end
-new_solution_cost = evaluate_solution(spline_xyt);
-%old_solution_cost = new_solution_cost;
-previous_iteration_spline_xyt = spline_xyt;
-
-if(DEBUG)
-    input('Press ENTER to continue to the next part');
-end
-vector_counter = vector_counter+1;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CICLE OF ITERATIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for vector_counter = 2:length(alpha_vector)
-    alpha = alpha_vector(vector_counter);
-    beta = beta_vector(vector_counter);
-    %filename =filename_vector(vector_counter);
-    %number_of_iterations = 20;
-    number_of_iterations = number_of_iterations_vector(vector_counter);
-
-    via_points = new_points;
-    [new_points,spline_xyt] = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
     new_points
-    old_solution_cost = new_solution_cost;
-    if(DEBUG)
-        input('\nPress ENTER to continue to the next part\n');
-    end
-    new_solution_cost  = evaluate_solution(spline_xyt);
-
-    if( (check_solution(previous_iteration_spline_xyt,start_point,target_point,new_solution_cost, ...
-            old_solution_cost,figure_to_draw, figure_to_draw_result))  > 0)
-        if(WINDOWS)
-            print('-dbmp16m', 'result');
-        end
-        if(LINUX)
-            iteration_number = vector_counter-1;
-            save('result', 'previous_iteration_spline_xyt','start_point','target_point','n','map_number','iteration_number');
-        end
-        
-        t2=toc;
-        t2
-        
-        return;
-    end
-
-    if(DEBUG)
-        input('\nPress ENTER to continue to the next part\n');
-    end
-   
-    if(WINDOWS)
-        print('-dbmp16m', filename_vector(vector_counter));
-    end
-    close(figure_to_draw);
+    %if(WINDOWS)
+    %    print('-dbmp16m', filename_vector(vector_counter));
+    %end
+    new_solution_cost = evaluate_solution(spline_xyt);
+    %old_solution_cost = new_solution_cost;
     previous_iteration_spline_xyt = spline_xyt;
+    %if(DEBUG)
+    %    input('Press ENTER to continue to the next part');
+    %end
+    vector_counter = vector_counter+1;
 
-end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%% CICLE OF ITERATIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    for vector_counter = 2:length(alpha_vector)
+        via_points = new_points;
+        [new_points,spline_xyt] = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
+        new_points
+        old_solution_cost = new_solution_cost;
+        %if(DEBUG)
+        %    input('\nPress ENTER to continue to the next part\n');
+        %end
+        new_solution_cost  = evaluate_solution(spline_xyt);
 
-t2=toc;
-t2
+        if( (check_solution(previous_iteration_spline_xyt,start_point,target_point,new_solution_cost, ...
+                old_solution_cost,figure_to_draw, figure_to_draw_result))  > 0)
+            %if(WINDOWS)
+            %    print('-dbmp16m', 'result');
+            %end
+            %if(LINUX)
+            %    iteration_number = vector_counter-1;
+            %    save('result', 'previous_iteration_spline_xyt','start_point','target_point','n','map_number','iteration_number');
+            %end
+            break;
+        end
+        %if(DEBUG)
+        %    input('\nPress ENTER to continue to the next part\n');
+        %end
+        %if(WINDOWS)
+        %    print('-dbmp16m', filename_vector(vector_counter));
+        %end
+        close(figure_to_draw);
+        previous_iteration_spline_xyt = spline_xyt;
+    end
+    
+    t1=toc;
+    res = 0;
+    if vector_counter<length(alpha_vector)
+        count_success_new = count_success_new + 1;
+        aver_iterate_new = aver_iterate_new + vector_counter;
+        aver_time_new = aver_time_new + t1;
+        res = 1;
+    end;
+    fprintf(fid, 'VorVersion iteration: %d , result: %d , time: %3.5f \n', vector_counter, res, t1);
+    t1
+
+    %%%%%%%%%%%%%%%%%%% Find Path without Voronoi Diagram %%%%%%%%%%%%%%%%%%%%
+    tic;
+    via_points = [(pairs(pts, 1)+pairs(pts, 3))./2,(pairs(pts, 2)+pairs(pts, 4))./2];
+    [new_points, spline_xyt]  = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
+    new_points
+    new_solution_cost = evaluate_solution(spline_xyt);
+    previous_iteration_spline_xyt = spline_xyt;
+    vector_counter = vector_counter+1;
+    for vector_counter = 2:length(alpha_vector)
+        via_points = new_points;
+        [new_points,spline_xyt] = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
+        new_points
+        old_solution_cost = new_solution_cost;
+        new_solution_cost  = evaluate_solution(spline_xyt);
+        if( (check_solution(previous_iteration_spline_xyt,start_point,target_point,new_solution_cost, ...
+                old_solution_cost,figure_to_draw, figure_to_draw_result))  > 0)
+            break;
+        end
+        close(figure_to_draw);
+        previous_iteration_spline_xyt = spline_xyt;
+    end    
+    t1=toc;
+    res = 0;
+    if vector_counter<length(alpha_vector)
+        count_success_old = count_success_old + 1;
+        aver_iterate_old = aver_iterate_old + vector_counter;
+        aver_time_old = aver_time_old + t1;
+        res = 1;
+    end;
+    fprintf(fid, 'OldVersion iteration: %d , result: %d , time: %3.5f \n', vector_counter, res, t1);
+    t1
+
+end;
+
+fprintf(fid, 'VorVersion av_iteration: %5.6f , success: %d , av_time: %5.6f \n', aver_iterate_new/count_success_new, count_success_new, aver_time_new/count_success_new);
+fprintf(fid, 'OldVersion av_iteration: %5.6f , success: %d , av_time: %5.6f \n', aver_iterate_old/count_success_old, count_success_old, aver_time_old/count_success_old);
+fprintf(fid, 'All experiments: %d \n', pair_num);
+
+fclose(fid);
+return;
+
+
+
+
+
+
+
+
+
 
 next = input('\nFirst stage search failed. To continue with second search stage press "1". To stop - press "0"\n');
 
