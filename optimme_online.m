@@ -154,7 +154,7 @@ limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
 %%%%%%%%%%%%%%%%%%% Calculate points_cnt points %%%%%%%%%%%%%%%%%%%%
-points_cnt = 1000;
+points_cnt = 100;
 rx=rand(points_cnt,1);
 ry=rand(points_cnt,1);
 for i=1:points_cnt
@@ -195,6 +195,9 @@ for i=1:points_cnt
             end
         end
     end
+end
+for i=points_cnt*points_cnt:-1:pair_num+1
+    pairs(i, :) = [];
 end
 
 %%%%%%%%%%%%%%%%%%% Find intersect points from different circles %%%%%%%%%%%%%%%%%%%%
@@ -417,7 +420,6 @@ via_points = [(stx(1)+stx(2))./2,(sty(1)+sty(2))./2];
 UseVoronoi = 1;
 shortest_path = [];
 if UseVoronoi==1 
-        
     
     [trajDV, Vertex_Cord_DV, PathWithoutCurve, CostWithoutCurve, ...
                         VertWithoutCurve, Edges, Verts] = rmt_get_voronoi(limits, (length(circles_intersection)+1), start_point, ...

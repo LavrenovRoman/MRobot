@@ -31,8 +31,6 @@ function [traj, Vertex_Cord, PathWithoutCurve, CostWithoutCurve, VertWithoutCurv
 %clear all;
 %close all;
 %clc;
-
-traj = [];
 Nxi = limits(1);
 Nx = limits(2);
 Nyi = limits(3);
@@ -217,30 +215,6 @@ for i=1:N
     end
 end
 
-%% =================================================================================
-% FINAL_PATH.M
-% =================================================================================
-
-%Minimum Distance
-M = length(Temp_Edge);
-
-Vertex_Cord = zeros(N, 2);
-Start_distance = zeros (N, 1);
-Goal_distance = zeros (N, 1);
-
-for i=1:N
-    Vertex_Cord(i,:)=Voro_Vertex(Vertex(i),:);
-    Start_distance(i)=norm(Start-Vertex_Cord(i,:));
-    Goal_distance(i)=norm(Goal-Vertex_Cord(i,:));
-end
-
-%weight of points
-Vertex_Weight = ones(N, 1);
-
-%figure;
-%axis([0 100 0 100]);
-%hold on;
-
 AllNeirboursVertexes = cell(N, 1);
 
 for i = 1:M
@@ -322,6 +296,31 @@ for i=1:length(Vertexes3)
         end
     end
 end
+
+%% =================================================================================
+% FINAL_PATH.M
+% =================================================================================
+traj = [];
+
+%Minimum Distance
+M = length(Temp_Edge);
+
+Vertex_Cord = zeros(N, 2);
+Start_distance = zeros (N, 1);
+Goal_distance = zeros (N, 1);
+
+for i=1:N
+    Vertex_Cord(i,:)=Voro_Vertex(Vertex(i),:);
+    Start_distance(i)=norm(Start-Vertex_Cord(i,:));
+    Goal_distance(i)=norm(Goal-Vertex_Cord(i,:));
+end
+
+%weight of points
+Vertex_Weight = ones(N, 1);
+
+%figure;
+%axis([0 100 0 100]);
+%hold on;
 
 VertWithoutCurve = cell(CurvesSize, 1);
 PathWithoutCurve = cell(CurvesSize, 1);
