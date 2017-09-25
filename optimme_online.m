@@ -127,6 +127,10 @@ if(WINDOWS)
     plot(stx,sty,'o');
 end
 
+text = strcat(int2str(map_number), '.txt');
+fid = fopen(text,'w');
+tic;
+
 %%%%%%%%%%%%%%%%%%% Calculate limits %%%%%%%%%%%%%%%%%%%%
 limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
 for i=1:length(radii)
@@ -154,7 +158,7 @@ limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
 %%%%%%%%%%%%%%%%%%% Calculate points_cnt points %%%%%%%%%%%%%%%%%%%%
-points_cnt = 6;
+points_cnt = 10;
 rx=rand(points_cnt,1);
 ry=rand(points_cnt,1);
 for i=1:points_cnt
@@ -162,6 +166,7 @@ for i=1:points_cnt
     ry(i,1) = (ry(i,1) * (limits(1,4) - limits(1,3))) + limits(1,3);
     %plot(rx(i,1),ry(i,1),'o');
 end;
+fprintf(fid, 'Point count all: %d \n', points_cnt);
 %%%%%%%%%%%%%%%%%%% Delete points inside circles %%%%%%%%%%%%%%%%%%%%
 for i=points_cnt:-1:1
     for j=1:length(radii)
@@ -199,6 +204,10 @@ end
 for i=points_cnt*points_cnt:-1:pair_num+1
     pairs(i, :) = [];
 end
+
+t1=toc;
+fprintf(fid, 'Point count outside: %d , Pairs count: %d , time: %3.5f \n', points_cnt, pair_num, t1);
+tic;
 
 %%%%%%%%%%%%%%%%%%% Find intersect points from different circles %%%%%%%%%%%%%%%%%%%%
 intersectionArray = cell(length(radii), 1);
@@ -411,11 +420,11 @@ end;
 [ Vertex, Voro_Vertex, Temp_Edge, UsesVertexes, Edges, Verts, CurvesSize, CurvesVertexes] = create_voronoi_diagram( limits, ...
                         (length(circles_intersection)+1), X_Total_points, Y_Total_points, All_cells_Number, Cell_start, 1);
 
+t1=toc;
+fprintf(fid, 'Voronoi find time: %3.5f \n', t1);
+                    
 %start_point = [stx(1),sty(1)];
 %target_point = [stx(2),sty(2)];
-%text = datestr(now);
-text = strcat(int2str(map_number), '.txt');
-fid = fopen(text,'w');
 
 alpha = alpha_vector(vector_counter);
 beta = beta_vector(vector_counter);
