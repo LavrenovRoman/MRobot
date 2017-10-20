@@ -70,7 +70,7 @@ len = 0.5*quad('arc_length',0,direct,[],[],spline_xyt);
 %len = 0;
 %hal = 0;
 %0.01*
-cost = obst + hal + len; % + 0*vstart + 0*vtargt + 0*c_min;
+cost = obst + 0.1*hal + 0.1*len; % + 0*vstart + 0*vtargt + 0*c_min;
 
 %for i=1:length(x(:,1))
 %    fprintf('%9g ', x(i,1));
@@ -78,6 +78,8 @@ cost = obst + hal + len; % + 0*vstart + 0*vtargt + 0*c_min;
 %fprintf('\n');
 
 fprintf('obstacles = %9g  length = %9g  halakut = %9g  ALL = %9g\n', obst, len, hal, cost);
+
+
 %fprintf('obstacles = %9g  length = %9g  halakut = %9g  vstart = %9g  vtargt = %9g  ALL = %9g\n', obst, len, hal, vstart, vtargt, cost);
 %fprintf('obstacles = %9g  length = %9g  halakut = %9g  min = %9g  c_min = %9g  ALL = %9g\n', obst, len, hal, vmin, c_min, cost);
 

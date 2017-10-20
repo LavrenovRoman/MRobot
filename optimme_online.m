@@ -158,7 +158,7 @@ limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
 %%%%%%%%%%%%%%%%%%% Calculate points_cnt points %%%%%%%%%%%%%%%%%%%%
-points_cnt = 10;
+points_cnt = 30;
 rx=rand(points_cnt,1);
 ry=rand(points_cnt,1);
 for i=1:points_cnt
@@ -204,6 +204,12 @@ end
 for i=points_cnt*points_cnt:-1:pair_num+1
     pairs(i, :) = [];
 end
+
+%%
+pair_num = 1;
+pairs = zeros(1, 4);
+pairs = [100.58770 85.15755 64.50200 25.65992];
+%%
 
 t1=toc;
 fprintf(fid, 'Point count outside: %d , Pairs count: %d , time: %3.5f \n', points_cnt, pair_num, t1);
@@ -466,6 +472,7 @@ for pts=1:pair_num
                 k = k + 2;
                 shortest_path(k, 1) = trajDV(i-1,1);
                 shortest_path(k+1, 1) = trajDV(i-1,2);
+                plot(shortest_path(k, 1),shortest_path(k+1, 1),'o');
                 break;
             end;
         end;
@@ -475,6 +482,9 @@ for pts=1:pair_num
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
     new_points
+    for p=1:2:length(new_points)
+        plot(new_points(p, 1),new_points(p+1, 1),'o');
+    end
     %if(WINDOWS)
     %    print('-dbmp16m', filename_vector(vector_counter));
     %end
@@ -491,6 +501,9 @@ for pts=1:pair_num
         via_points = new_points;
         [new_points,spline_xyt] = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
         new_points
+        for p=1:2:length(new_points)
+            plot(new_points(p, 1),new_points(p+1, 1),'o');
+        end
         old_solution_cost = new_solution_cost;
         %if(DEBUG)
         %    input('\nPress ENTER to continue to the next part\n');
@@ -527,7 +540,6 @@ for pts=1:pair_num
         res = 1;
     end;
     fprintf(fid, 'VorVersion iteration: %d , result: %d , time: %3.5f \n', vector_counter, res, t1);
-    t1
 
     %%%%%%%%%%%%%%%%%%% Find Path without Voronoi Diagram %%%%%%%%%%%%%%%%%%%%
     tic;
@@ -559,7 +571,6 @@ for pts=1:pair_num
         res = 1;
     end;
     fprintf(fid, 'OldVersion iteration: %d , result: %d , time: %3.5f \n', vector_counter, res, t1);
-    t1
 
 end;
 
