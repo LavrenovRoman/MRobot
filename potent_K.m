@@ -1,7 +1,7 @@
 function cost=potent_K(x,xS,yS,xT,yT)
 DEBUG = 0;
 %tic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+global radii;
 %%%%%%%%%%%%%%%%%% build t-spline for descendants too %%%%%%%%%%%%
 via_points = length(x)/2;
 
@@ -30,7 +30,7 @@ distcount = 20;
 step = (spline_xyt.breaks(1,2) - spline_xyt.breaks(1,1))/distcount;
 path = zeros(1+distcount*(length(spline_xyt.breaks)-1), 2);
 
-lengthpath = 0;
+%lengthpath = 0;
 p = 1;
 path(p,1) = spline_xyt.coefs(1, spline_xyt.order);
 path(p,2) = spline_xyt.coefs(2, spline_xyt.order);
@@ -47,11 +47,31 @@ for i=1:length(spline_xyt.breaks)-1
         end
         path(p,1) = x;
         path(p,2) = y;        
-        lengthpath = lengthpath + sqrt((x-path(p-1,1))^2 + (y-path(p-1,2))^2);
+        %lengthpath = lengthpath + sqrt((x-path(p-1,1))^2 + (y-path(p-1,2))^2);
         p = p + 1;
     end
 end
 
+lengths = zeros(1, length(path(:,1)));
+for i=1:length(path(:,1))
+    lengths(1,i) = 100000000;
+    for r=1:length(radii)
+        x_r = x_center(r);
+        y_r = y_center(r);
+        r_r = radii(r);
+        rx = x_r - path(i,1);
+        ry = y_r - path(i,2);
+        dist = sqrt(rx^2 + ry^2);
+        if (dist < r_r)
+            dist = -1;
+        else
+            dist = dist - r_r;
+        end;
+        if (dist < lengths(1,i))
+            lengths(1,i) = dist;
+        end;
+    end;    
+end
 %toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %hoefV = 1;
