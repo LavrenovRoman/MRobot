@@ -132,7 +132,7 @@ fid = fopen(text,'w');
 tic;
 
 %%%%%%%%%%%%%%%%%%% Calculate limits %%%%%%%%%%%%%%%%%%%%
-limits = [stx(1,1) stx(1,2) sty(1,1) sty(1,2)];
+limits = [x_center(1,1) x_center(1,1) y_center(1,1) y_center(1,1)];
 for i=1:length(radii)
     x_c = x_center(1,i);
     y_c = y_center(1,i);
@@ -150,15 +150,18 @@ for i=1:length(radii)
         limits(1,4) = y_c + r_c;
     end;
 end;
-dx = (limits(1,2) - limits(1,1))/20;
-dy = (limits(1,4) - limits(1,3))/20;
+dx = (limits(1,2) - limits(1,1))/5;
+dy = (limits(1,4) - limits(1,3))/5;
 limits(1,1) = limits(1,1)-dx;
 limits(1,2) = limits(1,2)+dx;
 limits(1,3) = limits(1,3)-dy;
 limits(1,4) = limits(1,4)+dy;
 
+
+
+
 %%%%%%%%%%%%%%%%%%% Calculate points_cnt points %%%%%%%%%%%%%%%%%%%%
-points_cnt = 30;
+points_cnt = 100;
 rx=rand(points_cnt,1);
 ry=rand(points_cnt,1);
 for i=1:points_cnt
@@ -205,11 +208,11 @@ for i=points_cnt*points_cnt:-1:pair_num+1
     pairs(i, :) = [];
 end
 
-%%
-pair_num = 1;
-pairs = zeros(1, 4);
-pairs = [100.58770 85.15755 64.50200 25.65992];
-%%
+%
+%pair_num = 1;
+%pairs = zeros(1, 4);
+%pairs = [50.14112 86.87426 86.64672 -1.48851];
+%
 
 t1=toc;
 fprintf(fid, 'Point count outside: %d , Pairs count: %d , time: %3.5f \n', points_cnt, pair_num, t1);
@@ -270,7 +273,7 @@ f_p = 1;
 step = 1;
 b = zeros(2,1);
 for i=1:length(radii)
-    t = ceil(2*pi*radii(i)/step); 
+    t = 2*pi*radii(i)/step; 
     d = ceil(360/t);
     endCircPoint = 0;
     temp = zeros(2,1);
@@ -422,7 +425,7 @@ for i=1:length(obstacles)
     obstacles{1, i} = obstacles{1, i}';
 end;
 [X_Total_points,Y_Total_points, All_cells_Number, Cell_start, X1] = rmt_voronoi_epsi(length(circles_intersection), limits,epsilonvoronoi,obstacles);
-
+    
 [ Vertex, Voro_Vertex, Temp_Edge, UsesVertexes, Edges, Verts, CurvesSize, CurvesVertexes] = create_voronoi_diagram( limits, ...
                         (length(circles_intersection)+1), X_Total_points, Y_Total_points, All_cells_Number, Cell_start, 1);
 
@@ -480,7 +483,7 @@ for pts=1:pair_num
     shortest_path(1, :) = [];
     shortest_path(1, :) = [];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
+      [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
     new_points
     for p=1:2:length(new_points)
         plot(new_points(p, 1),new_points(p+1, 1),'o');
