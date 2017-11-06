@@ -2,6 +2,8 @@ function cost=potent_K(x,xS,yS,xT,yT)
 DEBUG = 0;
 %tic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   TIC-TOC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global radii;
+global x_center;
+global y_center;
 %%%%%%%%%%%%%%%%%% build t-spline for descendants too %%%%%%%%%%%%
 via_points = length(x)/2;
 

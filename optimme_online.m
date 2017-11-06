@@ -209,9 +209,9 @@ for i=points_cnt*points_cnt:-1:pair_num+1
 end
 
 %
-%pair_num = 1;
-%pairs = zeros(1, 4);
-%pairs = [50.14112 86.87426 86.64672 -1.48851];
+pair_num = 1;
+pairs = zeros(1, 4);
+pairs = [0 0 100 100];
 %
 
 t1=toc;
