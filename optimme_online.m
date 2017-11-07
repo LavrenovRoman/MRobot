@@ -120,7 +120,7 @@ if(WINDOWS)
     stx = stx';
     sty = sty';
     
-    stx = [0 100];
+    stx = [50 50];
     sty = [0 100];
 
     figure(figure_to_draw);
@@ -211,7 +211,7 @@ end
 %
 pair_num = 1;
 pairs = zeros(1, 4);
-pairs = [0 0 100 100];
+pairs = [50 0 50 100];
 %
 
 t1=toc;
@@ -390,7 +390,7 @@ clf(figure_to_draw);
 draw_obstacle_map(figure_to_draw);
 
 %%%%%%%%%%%%%%%%%%% If want to show potential field -> show_potent_field=1 %%%%%%%%%%%%%%%%%%%%
-show_potent_field=0;
+show_potent_field=1;
 if (show_potent_field==1)
     s_x = linspace(limits(1,1),limits(1,2),101);
     s_y = linspace(limits(1,3),limits(1,4),101);
@@ -562,9 +562,9 @@ for pts=1:pair_num
                 old_solution_cost,figure_to_draw, figure_to_draw_result))  > 0)
             break;
         end
-        close(figure_to_draw);
         previous_iteration_spline_xyt = spline_xyt;
     end    
+    close(figure_to_draw);
     t1=toc;
     res = 0;
     if vector_counter<length(alpha_vector)

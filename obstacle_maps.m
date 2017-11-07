@@ -80,6 +80,10 @@ switch map_number
         x_center = [ 20 80 ];
         y_center = [90 40];
         radii = [42 42];
+    case 65,
+        x_center = [ 20 80 ];
+        y_center = [50 50];
+        radii = [40 40];
     case 7, % 3 circles intersect
         x_center = [20 40 60];
         y_center = [60 40 60];
