@@ -120,7 +120,7 @@ if(WINDOWS)
     stx = stx';
     sty = sty';
     
-    stx = [50 50];
+    stx = [0 100];
     sty = [0 100];
 
     figure(figure_to_draw);
@@ -211,7 +211,7 @@ end
 %
 pair_num = 1;
 pairs = zeros(1, 4);
-pairs = [50 0 50 100];
+pairs = [0 0 100 100];
 %
 
 t1=toc;
@@ -390,7 +390,7 @@ clf(figure_to_draw);
 draw_obstacle_map(figure_to_draw);
 
 %%%%%%%%%%%%%%%%%%% If want to show potential field -> show_potent_field=1 %%%%%%%%%%%%%%%%%%%%
-show_potent_field=1;
+show_potent_field=0;
 if (show_potent_field==1)
     s_x = linspace(limits(1,1),limits(1,2),101);
     s_y = linspace(limits(1,3),limits(1,4),101);
@@ -482,6 +482,11 @@ for pts=1:pair_num
     end;
     shortest_path(1, :) = [];
     shortest_path(1, :) = [];
+    plot(start_point(1, 1), start_point(1, 2),'o','color','b','LineWidth',2);
+    for p=1:2:length(shortest_path)
+        plot(shortest_path(p, 1),shortest_path(p+1, 1),'o','color','b','LineWidth',2);
+    end
+    plot(target_point(1, 1), target_point(1, 2),'o','color','b','LineWidth',2);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIRST ITERATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
     new_points
@@ -505,7 +510,7 @@ for pts=1:pair_num
         [new_points,spline_xyt] = add_one_more_point_to_spline(via_points, start_point, target_point, figure_to_draw);
         new_points
         for p=1:2:length(new_points)
-            plot(new_points(p, 1),new_points(p+1, 1),'o');
+            plot(new_points(p, 1),new_points(p+1, 1),'o','color','b','LineWidth',2);
         end
         old_solution_cost = new_solution_cost;
         %if(DEBUG)

@@ -405,17 +405,15 @@ end
  for i=1:length(path)-1
      x=[Vertex_Cord(path(i),1) Vertex_Cord(path(i+1),1)];
      y=[Vertex_Cord(path(i),2) Vertex_Cord(path(i+1),2)];
-     if Is_draw==1
-         plot(x,y,'-','color','r','LineWidth',2);
-         %drawnow;
-         hold on;
-     end;
      traj = [traj;[x', y']];
- end
- 
+ end 
  traj = [Start; traj];
  traj = [traj; Goal];
  
+ if Is_draw==1
+    plot(traj(:,1), traj(:,2),'-','color','r','LineWidth',2);
+    hold on;
+ end;
  %x=[Vertex_Cord(path(i+1),1) Goal(1)];
  %y=[Vertex_Cord(path(i+1),2) Goal(2)];
  %if Is_draw==1
