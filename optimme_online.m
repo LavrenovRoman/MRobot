@@ -491,7 +491,7 @@ for pts=1:pair_num
       [new_points, spline_xyt]  = add_one_more_point_to_spline(shortest_path, start_point, target_point, figure_to_draw);
     new_points
     for p=1:2:length(new_points)
-        plot(new_points(p, 1),new_points(p+1, 1),'o');
+        plot(new_points(p, 1),new_points(p+1, 1),'o','color','b','LineWidth',2);
     end
     %if(WINDOWS)
     %    print('-dbmp16m', filename_vector(vector_counter));

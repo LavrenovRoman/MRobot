@@ -92,7 +92,7 @@ len = 0.5*quad('arc_length',0,direct,[],[],spline_xyt);
 %len = 0;
 %hal = 0;
 %0.01*
-cost = obst + 0.1*hal + 5.0*len; % + 0*vstart + 0*vtargt + 0*c_min;
+cost = 5*obst + 0.1*hal + 0.1*len; % + 0*vstart + 0*vtargt + 0*c_min;
 
 %for i=1:length(x(:,1))
 %    fprintf('%9g ', x(i,1));
